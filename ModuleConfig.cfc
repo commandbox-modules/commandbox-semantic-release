@@ -5,31 +5,42 @@ component {
 
     function configure() {
         settings = {
-            plugins = {
+            "versionPrefix" = "v",
+            "targetBranch" = "master",
+            "plugins" = {
                 "VerifyConditions" = "TravisConditionsVerifier@commandbox-semantic-release",
                 "GetLastRelease"   = "ForgeBoxReleaseFetcher@commandbox-semantic-release",
                 "AnalyzeCommits"   = "DefaultCommitAnalyzer@commandbox-semantic-release",
-                "VerifyRelease"    = "DefaultReleaseVerifier@commandbox-semantic-release",
+                "VerifyRelease"    = "NullReleaseVerifier@commandbox-semantic-release",
                 "PublishRelease"   = "ForgeBoxReleasePublisher@commandbox-semantic-release",
-                "GenerateNotes"    = "DefaultNotesGenerator@commandbox-semantic-release",
+                "GenerateNotes"    = "GitHubMarkdownNotesGenerator@commandbox-semantic-release",
                 "PublicizeRelease" = "GitHubReleasePublicizer@commandbox-semantic-release"
+            },
+            "pluginOptions" = {
+                "VerifyConditions" = {
+                    "buildTimeout" = 600, // seconds
+                    "pollingInterval" = 5 // seconds
+                }
             }
         };
 
         binder.map( "TravisConditionsVerifier@commandbox-semantic-release" )
-            .to( "#moduleMapping#.models.TravisConditionsVerifier" );
+            .to( "#moduleMapping#.models.plugins.TravisConditionsVerifier" );
         binder.map( "ForgeBoxReleaseFetcher@commandbox-semantic-release" )
-            .to( "#moduleMapping#.models.ForgeBoxReleaseFetcher" );
+            .to( "#moduleMapping#.models.plugins.ForgeBoxReleaseFetcher" );
         binder.map( "DefaultCommitAnalyzer@commandbox-semantic-release" )
-            .to( "#moduleMapping#.models.DefaultCommitAnalyzer" );
-        binder.map( "DefaultReleaseVerifier@commandbox-semantic-release" )
-            .to( "#moduleMapping#.models.DefaultReleaseVerifier" );
+            .to( "#moduleMapping#.models.plugins.DefaultCommitAnalyzer" );
+        binder.map( "NullReleaseVerifier@commandbox-semantic-release" )
+            .to( "#moduleMapping#.models.plugins.NullReleaseVerifier" );
         binder.map( "ForgeBoxReleasePublisher@commandbox-semantic-release" )
-            .to( "#moduleMapping#.models.ForgeBoxReleasePublisher" );
-        binder.map( "DefaultNotesGenerator@commandbox-semantic-release" )
-            .to( "#moduleMapping#.models.DefaultNotesGenerator" );
+            .to( "#moduleMapping#.models.plugins.ForgeBoxReleasePublisher" );
+        binder.map( "GitHubMarkdownNotesGenerator@commandbox-semantic-release" )
+            .to( "#moduleMapping#.models.plugins.GitHubMarkdownNotesGenerator" );
         binder.map( "GitHubReleasePublicizer@commandbox-semantic-release" )
-            .to( "#moduleMapping#.models.GitHubReleasePublicizer" );
+            .to( "#moduleMapping#.models.plugins.GitHubReleasePublicizer" );
+
+        binder.map( "ConventionalChangelogParser@commandbox-semantic-release" )
+            .to( "#moduleMapping#.models.ConventionalChangelogParser" );
     }
 
     function onLoad() {

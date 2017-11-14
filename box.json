@@ -1,0 +1,38 @@
+{
+    "name":"commandbox-semantic-release",
+    "version":"1.0.0",
+    "author":"Eric Peterson",
+    "homepage":"https://github.com/elpete/commandbox-semantic-release",
+    "documentation":"https://github.com/elpete/commandbox-semantic-release",
+    "location":"elpete/commandbox-semantic-release#v1.0.0",
+    "scripts":{
+        "postVersion":"package set location='elpete/commandbox-semantic-release#v`package version`'",
+        "onRelease":"publish",
+        "postPublish":"!git push && !git push --tags"
+    },
+    "repository":{
+        "type":"git",
+        "URL":"https://github.com/elpete/commandbox-semantic-release"
+    },
+    "slug":"commandbox-semantic-release",
+    "shortDescription":"Automated releases for CFML applications",
+    "keywords":[
+        "release",
+        "forgebox",
+        "semantic-versioning",
+        "automation"
+    ],
+    "private":false,
+    "type":"modules",
+    "ignore":[
+        "**/.*",
+        "test",
+        "tests"
+    ],
+    "dependencies":{
+        "semver":"^1.1.3"
+    },
+    "installPaths":{
+        "semver":"modules/semver"
+    }
+}
