@@ -5,7 +5,12 @@ component implements="interfaces.ReleaseFetcher" {
 
     public string function run( required string slug ) {
         var APIToken = configService.getSetting( "endpoints.forgebox.APIToken", "" );
-        var entry = forgebox.getEntry( slug );
+        try {
+            var entry = forgebox.getEntry( slug );
+        }
+        catch ( forgebox e ) {
+            return "0.0.0";
+        }
         return structIsEmpty( entry.latestVersion ) ? "0.0.0" : entry.latestVersion.version;
     }
 
