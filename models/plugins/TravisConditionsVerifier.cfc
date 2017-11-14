@@ -14,13 +14,13 @@ component implements="interfaces.ConditionsVerifier" {
         }
 
         // false if a pull request
-        if ( systemSettings.getSystemSetting( "TRAVIS_PULL_REQUEST", false ) ) {
+        if ( systemSettings.getSystemSetting( "TRAVIS_PULL_REQUEST", "" ) != "" ) {
             consoleLogger.warn( "Currently building a Pull Request." );
             return false;
         }
 
         // false if a tag
-        if ( systemSettings.getSystemSetting( "TRAVIS_TAG", false ) ) {
+        if ( systemSettings.getSystemSetting( "TRAVIS_TAG", "" ) != "" ) {
             consoleLogger.warn( "Currently building a tag." );
             return false;
         }
