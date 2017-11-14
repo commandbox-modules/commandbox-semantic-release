@@ -23,7 +23,7 @@
         "automation"
     ],
     "private":false,
-    "type":"modules",
+    "type":"commandbox-modules",
     "ignore":[
         "**/.*",
         "test",
