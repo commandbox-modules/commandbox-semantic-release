@@ -20,7 +20,7 @@ component implements="interfaces.ConditionsVerifier" {
         }
 
         // false if a tag
-        if ( systemSettings.getSystemSetting( "TRAVIS_TAG", "" ) != "" ) {
+        if ( systemSettings.getSystemSetting( "TRAVIS_TAG", "false" ) != "false" ) {
             consoleLogger.warn( "Currently building a tag." );
             return false;
         }
