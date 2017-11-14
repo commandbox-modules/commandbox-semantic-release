@@ -35,7 +35,7 @@ component implements="interfaces.NotesGenerator" {
             arrayAppend( docsArray, docCommits[ header ].map( function( parsedCommit ) {
                 var subject = parsedCommit.subject != "" ? parsedCommit.subject : parsedCommit.body;
                 var scope = parsedCommit.scope == "*" ? "\*" : parsedCommit.scope;
-                return "+ __#scope#:__ #subject# ([#parsedCommit.shortHash#](#repositoryUrl#/#parsedCommit.hash#))";
+                return "+ __#scope#:__ #subject# ([#parsedCommit.shortHash#](#repositoryUrl#/commit/#parsedCommit.hash#))";
             } ), true );
             docsArray.append( "" );
         }
