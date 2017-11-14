@@ -1,10 +1,10 @@
 {
     "name":"commandbox-semantic-release",
-    "version":"1.0.5",
+    "version":"1.0.6",
     "author":"Eric Peterson",
     "homepage":"https://github.com/elpete/commandbox-semantic-release",
     "documentation":"https://github.com/elpete/commandbox-semantic-release",
-    "location":"elpete/commandbox-semantic-release#v1.0.5",
+    "location":"elpete/commandbox-semantic-release#v1.0.6",
     "scripts":{
         "postVersion":"package set location='elpete/commandbox-semantic-release#v`package version`'",
         "onRelease":"publish",
