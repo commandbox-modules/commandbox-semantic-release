@@ -137,10 +137,18 @@ component {
 
     private string function applyVersionChange( required string lastVersion, required string type ) {
         var versionInfo = semanticVersion.parseVersion( lastVersion );
+
+        if ( lastVersion == "0.0.0" ) {
+            versionInfo.major = 1;
+            versionInfo.minor = 0;
+            versionInfo.revision = 0;
+            return semanticVersion.getVersionAsString( versionInfo );
+        }
+
         switch ( type ) {
             case "major":
-                versionInfo.major += 1
-                versionInfo.minor = 0
+                versionInfo.major += 1;
+                versionInfo.minor = 0;
                 versionInfo.revision = 0;
                 break;
             case "minor":
