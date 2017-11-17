@@ -37,13 +37,13 @@ component implements="interfaces.ReleasePublisher" {
         gitConfig.setString( "user", javacast( "null", "" ), "name", "Travis CI" );
         gitConfig.save();
 
-        git.remoteAdd()
-            .setName( "origin-travis" )
-            .setUri(
-                createObject( "java", "org.eclipse.jgit.transport.URIish" )
-                    .init( "https://#systemSettings.getSystemSetting( "GH_TOKEN" )#@github.com/#systemSettings.getSystemSetting( "TRAVIS_REPO_SLUG" )#" )
-            )
-            .call();
+        var remoteAddCommand = git.remoteAdd();
+        remoteAddCommand.setName( "origin-travis" )
+        remoteAddCommand.setUri(
+            createObject( "java", "org.eclipse.jgit.transport.URIish" )
+                .init( "https://#systemSettings.getSystemSetting( "GH_TOKEN" )#@github.com/#systemSettings.getSystemSetting( "TRAVIS_REPO_SLUG" )#" )
+        );
+        remoteAddCommand.call();
 
         git.push()
             .setRemote( "origin-travis" )
