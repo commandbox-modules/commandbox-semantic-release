@@ -37,22 +37,6 @@ component implements="interfaces.ReleasePublisher" {
         gitConfig.setString( "user", javacast( "null", "" ), "name", "Travis CI" );
         gitConfig.save();
 
-        // Add the box.json
-        git.add()
-            .addFilepattern( 'box.json' )
-            .call();
-
-        // Commit the box.json
-        git.commit()
-            .setMessage( nextVersion )
-            .call();
-
-        // Tag this version
-        git.tag()
-            .setName( '#versionPrefix##nextVersion#' )
-            .setMessage( nextVersion )
-            .call();
-
         git.remoteAdd()
             .setName( "origin-travis" )
             .setUri(
