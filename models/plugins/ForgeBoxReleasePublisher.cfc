@@ -45,7 +45,11 @@ component implements="interfaces.ReleasePublisher" {
         );
         remoteAddCommand.call();
 
+        var credentialsProvider = createObject( "java", "org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider" )
+            .init( systemSettings.getSystemSetting( "GH_TOKEN" ), "" );
+
         git.push()
+            .setCredentialsProvider( credentialsProvider )
             .setRemote( "origin-travis" )
             .add( "master" )
             .call();
