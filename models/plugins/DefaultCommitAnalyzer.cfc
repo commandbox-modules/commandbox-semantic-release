@@ -2,7 +2,7 @@ component implements="interfaces.CommitAnalyzer" {
 
     property name="parser" inject="ConventionalChangelogParser@commandbox-semantic-release";
 
-    public string function run( required array commits ) {
+    public string function run( required array commits, boolean dryRun = false ) {
         return commits.reduce( function( maxType, commit ) {
             if ( maxType == "major" ) {
                 return "major";

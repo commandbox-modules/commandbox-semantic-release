@@ -14,8 +14,14 @@ component {
 
     property name="versionPrefix"    inject="commandbox:moduleSettings:commandbox-semantic-release:versionPrefix";
 
-    function run() {
-        if ( ! VerifyConditions.run() ) {
+    function run( dryRun = false ) {
+        if ( dryRun ) {
+            print.indentedYellowLine( "Starting Dry Run..." )
+                .line()
+                .toConsole();
+        }
+
+        if ( ! dryRun && ! VerifyConditions.run() ) {
             print.yellowLine( "Verify conditions check failed — aborting release." );
             return;
         }
@@ -30,8 +36,10 @@ component {
             .toConsole();
 
         var commits = getCommits( since = lastVersion );
-        var type = AnalyzeCommits.run( commits );
-        print.indentedGreen( "✓" ).indentedWhite( "Next release type: " ).line( " #type# ", getTypeColor( type ) );
+        var type = AnalyzeCommits.run( commits, dryRun );
+        print.indentedGreen( "✓" )
+            .indentedWhite( "Next release type: " )
+            .line( " #type# ", getTypeColor( type ) );
 
         var nextVersion = applyVersionChange( lastVersion, type );
         print.indentedGreen( "✓" )
@@ -43,11 +51,15 @@ component {
             print.yellowLine( "Verify release check failed — aborting release." );
             return;
         }
+
         print.indentedGreen( "✓" )
             .indentedWhiteLine( "Release verified" )
             .toConsole();
 
-        PublishRelease.run( nextVersion );
+        if ( ! dryRun ) {
+            PublishRelease.run( nextVersion );
+        }
+
         print.indentedGreen( "✓" )
             .indentedWhiteLine( "Release published" )
             .toConsole();
@@ -57,7 +69,10 @@ component {
             .indentedWhiteLine( "Notes generated" )
             .toConsole();
 
-        PublicizeRelease.run( notes, nextVersion, getPackageRepositoryURL() );
+        if ( ! dryRun ) {
+            PublicizeRelease.run( notes, nextVersion, getPackageRepositoryURL() );
+        }
+
         print.indentedGreen( "✓" )
             .indentedWhiteLine( "Release publicized" )
             .toConsole();
