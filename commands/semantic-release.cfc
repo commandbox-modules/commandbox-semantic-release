@@ -47,7 +47,6 @@ component {
             .toConsole();
 
         var commits = getCommits( since = lastVersion );
-        systemOutput( commits );
         var type = AnalyzeCommits.run( commits, dryRun );
         print.indentedGreen( "✓" )
             .indentedWhite( "Next release type: " )
