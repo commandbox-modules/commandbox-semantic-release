@@ -6,6 +6,7 @@ component {
     function configure() {
         settings = {
             "versionPrefix" = "v",
+            "changelogFileName" = "CHANGELOG.md",
             "targetBranch" = "master",
             "plugins" = {
                 "VerifyConditions" = "TravisConditionsVerifier@commandbox-semantic-release",

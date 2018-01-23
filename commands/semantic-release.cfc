@@ -1,18 +1,23 @@
 component {
 
-    property name="VerifyConditions" inject="VerifyConditions@commandbox-semantic-release";
-    property name="GetLastRelease"   inject="GetLastRelease@commandbox-semantic-release";
-    property name="AnalyzeCommits"   inject="AnalyzeCommits@commandbox-semantic-release";
-    property name="VerifyRelease"    inject="VerifyRelease@commandbox-semantic-release";
-    property name="PublishRelease"   inject="PublishRelease@commandbox-semantic-release";
-    property name="GenerateNotes"    inject="GenerateNotes@commandbox-semantic-release";
-    property name="PublicizeRelease" inject="PublicizeRelease@commandbox-semantic-release";
+    property name="VerifyConditions"  inject="VerifyConditions@commandbox-semantic-release";
+    property name="GetLastRelease"    inject="GetLastRelease@commandbox-semantic-release";
+    property name="AnalyzeCommits"    inject="AnalyzeCommits@commandbox-semantic-release";
+    property name="VerifyRelease"     inject="VerifyRelease@commandbox-semantic-release";
+    property name="PublishRelease"    inject="PublishRelease@commandbox-semantic-release";
+    property name="GenerateNotes"     inject="GenerateNotes@commandbox-semantic-release";
+    property name="PublicizeRelease"  inject="PublicizeRelease@commandbox-semantic-release";
 
-    property name="packageService"   inject="packageService";
-    property name="semanticVersion"  inject="provider:semanticVersion@semver";
-    property name="fileSystemUtil"   inject="FileSystem";
+    property name="commitParser"      inject="ConventionalChangelogParser@commandbox-semantic-release";
+    property name="semanticVersion"   inject="provider:semanticVersion@semver";
+    property name="packageService"    inject="packageService";
+    property name="systemSettings"    inject="SystemSettings";
+    property name="fileSystemUtil"    inject="FileSystem";
 
-    property name="versionPrefix"    inject="commandbox:moduleSettings:commandbox-semantic-release:versionPrefix";
+    property name="changelogFileName" inject="commandbox:moduleSettings:commandbox-semantic-release:changelogFileName";
+    property name="versionPrefix"     inject="commandbox:moduleSettings:commandbox-semantic-release:versionPrefix";
+
+    variables.SEMANTIC_RELEASE_COMMIT_MESSAGE = "__SEMANTIC RELEASE VERSION UPDATE__";
 
     function run( dryRun = false ) {
         if ( dryRun ) {
@@ -21,10 +26,16 @@ component {
                 .toConsole();
         }
 
+        if ( ! dryRun && systemSettings.getSystemSetting( "TRAVIS_COMMIT_MESSAGE", "" ) == SEMANTIC_RELEASE_COMMIT_MESSAGE ) {
+            print.yellowLine( "Build kicked off from previous release — aborting release." );
+            return;
+        }
+
         if ( ! dryRun && ! VerifyConditions.run() ) {
             print.yellowLine( "Verify conditions check failed — aborting release." );
             return;
         }
+
         print.indentedGreen( "✓" )
             .indentedWhiteLine( "Conditions verified" )
             .toConsole();
@@ -36,6 +47,7 @@ component {
             .toConsole();
 
         var commits = getCommits( since = lastVersion );
+        systemOutput( commits );
         var type = AnalyzeCommits.run( commits, dryRun );
         print.indentedGreen( "✓" )
             .indentedWhite( "Next release type: " )
@@ -65,8 +77,48 @@ component {
             .toConsole();
 
         var notes = GenerateNotes.run( lastVersion, nextVersion, commits, type, getPackageRepositoryURL() );
+
+        if ( ! dryRun ) {
+            var changelogNotes = "## #dateFormat( now(), "dd mmm yyyy" )#" & chr(10) & chr(10) & notes;
+            var changelogPath = fileSystemUtil.resolvePath( "" ) & changelogFileName;
+            if ( fileExists( changelogPath ) ) {
+                var currentChangelog = fileRead( changelogPath );
+                changelogNotes = changelogNotes & chr(10) & chr(10) & currentChangelog;
+            }
+            fileWrite( changelogPath, changelogNotes );
+        }
+
         print.indentedGreen( "✓" )
             .indentedWhiteLine( "Notes generated" )
+            .toConsole();
+
+        if ( ! dryRun ) {
+            var builder = createObject( "java", "org.eclipse.jgit.storage.file.FileRepositoryBuilder" ).init();
+            var gitDir = createObject( "java", "java.io.File" ).init( fileSystemUtil.resolvePath( "" ) & ".git" );
+            var repository = builder
+                .setGitDir( gitDir )
+                .setMustExist( true )
+                .readEnvironment() // scan environment GIT_* variables
+                .findGitDir() // scan up the file system tree
+                .build();
+            var jGit = createObject( "java", "org.eclipse.jgit.api.Git" ).init( repository );
+
+            jGit.add().addFilePattern( "." ).call();
+            jGit.commit()
+                .setMessage( SEMANTIC_RELEASE_COMMIT_MESSAGE )
+                .setAuthor( "Travis CI", "builds@travis-ci.com" )
+                .call();
+
+            var credentials = createObject( "java", "org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider" )
+                .init( systemSettings.getSystemSetting( "GITHUB_TOKEN" ), "" );
+
+            jGit.push()
+                .setCredentialsProvider( credentials )
+                .call();
+        }
+
+        print.indentedGreen( "✓" )
+            .indentedWhiteLine( "Source control updated" )
             .toConsole();
 
         if ( ! dryRun ) {
@@ -102,6 +154,7 @@ component {
         return packageService.readPackageDescriptor( path ).repository.url;
     }
 
+    // needs to ignore semantic-release commit message commits
     private array function getCommits( since ) {
         var builder = createObject( "java", "org.eclipse.jgit.storage.file.FileRepositoryBuilder" ).init();
         var gitDir = createObject( "java", "java.io.File" ).init( fileSystemUtil.resolvePath( "" ) & ".git" );
@@ -122,7 +175,10 @@ component {
         if ( isNull( tagRef ) ) {
             while( commitsIterator.hasNext() ) {
                 var commit = commitsIterator.next();
-                arrayAppend( commitsArray, commit );
+                var parsedCommit = commitParser.parse( commit );
+                if ( ! parsedCommit.body.contains( SEMANTIC_RELEASE_COMMIT_MESSAGE ) ) {
+                    arrayAppend( commitsArray, parsedCommit );
+                }
             }
         }
         else {
@@ -132,7 +188,10 @@ component {
             }
             while( commitsIterator.hasNext() ) {
                 var commit = commitsIterator.next();
-                arrayAppend( commitsArray, commit );
+                var parsedCommit = commitParser.parse( commit );
+                if ( ! parsedCommit.body.contains( SEMANTIC_RELEASE_COMMIT_MESSAGE ) ) {
+                    arrayAppend( commitsArray, parsedCommit );
+                }
                 if ( commit.getId().equals( targetId ) ) {
                     break;
                 }

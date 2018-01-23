@@ -9,7 +9,10 @@ component implements="interfaces.ReleasePublisher" {
                 name = "CommandDSL",
                 initArguments = { name = "package version" }
             )
-            .params( version = nextVersion )
+            .params(
+                version = nextVersion,
+                tagVersion = false
+            )
             .run();
 
         // publish to ForgeBox

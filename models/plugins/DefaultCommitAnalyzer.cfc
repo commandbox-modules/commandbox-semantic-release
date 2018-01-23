@@ -8,9 +8,7 @@ component implements="interfaces.CommitAnalyzer" {
                 return "major";
             }
 
-            var ccCommit = parser.parse( commit );
-
-            if ( ccCommit.isBreakingChange ) {
+            if ( commit.isBreakingChange ) {
                 return "major";
             }
 
@@ -18,7 +16,7 @@ component implements="interfaces.CommitAnalyzer" {
                 return "minor";
             }
 
-            if ( ccCommit.type == "feat" ) {
+            if ( commit.type == "feat" ) {
                 return "minor";
             }
 

@@ -10,20 +10,18 @@ component implements="interfaces.NotesGenerator" {
         required string repositoryUrl
     ) {
         var docCommits = commits.reduce( function( docs, commit ) {
-            var parsedCommit = parser.parse( commit );
-
-            if ( parsedCommit.isBreakingChange ) {
+            if ( commit.isBreakingChange ) {
                 if ( ! docs.keyExists( "breaking" ) ) {
                     docs.breaking = [];
                 }
-                docs.breaking.append( parsedCommit );
+                docs.breaking.append( commit );
                 return docs;
             }
 
-            if ( ! docs.keyExists( parsedCommit.type ) ) {
-                docs[ parsedCommit.type ] = [];
+            if ( ! docs.keyExists( commit.type ) ) {
+                docs[ commit.type ] = [];
             }
-            docs[ parsedCommit.type ].append( parsedCommit );
+            docs[ commit.type ].append( commit );
             return docs;
         }, {} );
         var docsArray = [];
@@ -32,10 +30,10 @@ component implements="interfaces.NotesGenerator" {
         for ( var header in headers ) {
             docsArray.append( "###### #header#" );
             docsArray.append( "" );
-            arrayAppend( docsArray, docCommits[ header ].map( function( parsedCommit ) {
-                var subject = parsedCommit.subject != "" ? parsedCommit.subject : parsedCommit.body;
-                var scope = parsedCommit.scope == "*" ? "\*" : parsedCommit.scope;
-                return "+ __#scope#:__ #subject# ([#parsedCommit.shortHash#](#repositoryUrl#/commit/#parsedCommit.hash#))";
+            arrayAppend( docsArray, docCommits[ header ].map( function( commit ) {
+                var subject = commit.subject != "" ? commit.subject : commit.body;
+                var scope = commit.scope == "*" ? "\*" : commit.scope;
+                return "+ __#scope#:__ #subject# ([#commit.shortHash#](#repositoryUrl#/commit/#commit.hash#))";
             } ), true );
             docsArray.append( "" );
         }
