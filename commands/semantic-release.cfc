@@ -126,11 +126,14 @@ component {
             }
         }
         else {
-            var peeledTagRef = repository.peel( tagRef );
+            var targetId = repository.peel( tagRef ).getPeeledObjectId();
+            if ( isNull( targetId ) ) {
+                targetId = tagRef.getObjectId();
+            }
             while( commitsIterator.hasNext() ) {
                 var commit = commitsIterator.next();
                 arrayAppend( commitsArray, commit );
-                if ( commit.getId().equals( peeledTagRef.getPeeledObjectId() ) ) {
+                if ( commit.getId().equals( targetId ) ) {
                     break;
                 }
             }
