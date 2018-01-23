@@ -1,18 +1,18 @@
 {
-    "name":"commandbox-semantic-release",
+    "name":"CommandBox Semantic Release",
     "version":"1.0.13",
     "author":"Eric Peterson",
-    "homepage":"https://github.com/coldbox-modules/commandbox-semantic-release",
-    "documentation":"https://github.com/coldbox-modules/commandbox-semantic-release",
-    "location":"coldbox-modules/commandbox-semantic-release#v1.0.13",
+    "homepage":"https://github.com/commandbox-modules/commandbox-semantic-release",
+    "documentation":"https://github.com/commandbox-modules/commandbox-semantic-release",
+    "location":"commandbox-modules/commandbox-semantic-release#v1.0.13",
     "scripts":{
-        "postVersion":"package set location='coldbox-modules/commandbox-semantic-release#v`package version`'",
+        "postVersion":"package set location='commandbox-modules/commandbox-semantic-release#v`package version`'",
         "onRelease":"publish",
         "postPublish":"!git push && !git push --tags"
     },
     "repository":{
         "type":"git",
-        "URL":"https://github.com/coldbox-modules/commandbox-semantic-release"
+        "URL":"https://github.com/commandbox-modules/commandbox-semantic-release"
     },
     "slug":"commandbox-semantic-release",
     "shortDescription":"Automated releases for CFML applications",
