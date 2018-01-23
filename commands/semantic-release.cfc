@@ -115,7 +115,7 @@ component {
                 .call();
 
             var credentials = createObject( "java", "org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider" )
-                .init( systemSettings.getSystemSetting( "GITHUB_TOKEN" ), "" );
+                .init( systemSettings.getSystemSetting( "GH_TOKEN" ), "" );
 
             jGit.push()
                 .setCredentialsProvider( credentials )
