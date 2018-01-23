@@ -1,10 +1,10 @@
 {
     "name":"CommandBox Semantic Release",
-    "version":"1.2.2",
+    "version":"1.2.3",
     "author":"Eric Peterson",
     "homepage":"https://github.com/commandbox-modules/commandbox-semantic-release",
     "documentation":"https://github.com/commandbox-modules/commandbox-semantic-release",
-    "location":"commandbox-modules/commandbox-semantic-release#v1.2.2",
+    "location":"commandbox-modules/commandbox-semantic-release#v1.2.3",
     "scripts":{
         "postVersion":"package set location='commandbox-modules/commandbox-semantic-release#v`package version`'",
         "onRelease":"publish",
