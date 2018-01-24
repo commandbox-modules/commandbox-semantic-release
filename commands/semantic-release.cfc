@@ -90,13 +90,13 @@ component {
 
         var notes = GenerateNotes.run( lastVersion, nextVersion, commits, type, getPackageRepositoryURL() );
 
+        var changelogNotes = "## #dateTimeFormat( now(), "dd-mmm-yyyy '—' HH:nn:ss 'UTC'", "UTC" )#" & chr(10) & chr(10) & notes;
+        var changelogPath = fileSystemUtil.resolvePath( "" ) & changelogFileName;
+        if ( fileExists( changelogPath ) ) {
+            var currentChangelog = fileRead( changelogPath );
+            changelogNotes = changelogNotes & chr(10) & chr(10) & currentChangelog;
+        }
         if ( ! dryRun ) {
-            var changelogNotes = "## #dateFormat( now(), "dd mmm yyyy" )#" & chr(10) & chr(10) & notes;
-            var changelogPath = fileSystemUtil.resolvePath( "" ) & changelogFileName;
-            if ( fileExists( changelogPath ) ) {
-                var currentChangelog = fileRead( changelogPath );
-                changelogNotes = changelogNotes & chr(10) & chr(10) & currentChangelog;
-            }
             fileWrite( changelogPath, changelogNotes );
         }
 
