@@ -16,6 +16,7 @@ component {
 
     property name="changelogFileName" inject="commandbox:moduleSettings:commandbox-semantic-release:changelogFileName";
     property name="versionPrefix"     inject="commandbox:moduleSettings:commandbox-semantic-release:versionPrefix";
+    property name="targetBranch"   inject="commandbox:moduleSettings:commandbox-semantic-release:targetBranch";
 
     variables.SEMANTIC_RELEASE_COMMIT_MESSAGE = "__SEMANTIC RELEASE VERSION UPDATE__";
 
@@ -102,6 +103,10 @@ component {
                 .build();
             var jGit = createObject( "java", "org.eclipse.jgit.api.Git" ).init( repository );
 
+            jGit.checkout()
+                .setName( targetBranch )
+                .call();
+
             jGit.add()
                 .addFilePattern( "box.json" )
                 .addFilePattern( changelogFileName )
@@ -121,6 +126,12 @@ component {
                 .init( systemSettings.getSystemSetting( "GH_TOKEN" ), "" );
 
             jGit.push()
+                .setDryRun( dryRun )
+                .setCredentialsProvider( credentials )
+                .call();
+
+            jGit.push()
+                .setDryRun( dryRun )
                 .setCredentialsProvider( credentials )
                 .setPushTags()
                 .call();
