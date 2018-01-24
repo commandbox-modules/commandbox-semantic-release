@@ -48,6 +48,11 @@ component {
             .toConsole();
 
         var commits = getCommits( since = lastVersion );
+        if ( commits.isEmpty() ) {
+            print.yellowLine( "No changes detected — aborting release." );
+            return;
+        }
+
         var type = AnalyzeCommits.run( commits, dryRun );
         print.indentedGreen( "✓" )
             .indentedWhite( "Next release type: " )
@@ -206,6 +211,7 @@ component {
             if ( isNull( targetId ) ) {
                 targetId = tagRef.getObjectId();
             }
+
             while( commitsIterator.hasNext() ) {
                 var commit = commitsIterator.next();
                 var parsedCommit = commitParser.parse( commit );
