@@ -102,14 +102,17 @@ component {
                 .build();
             var jGit = createObject( "java", "org.eclipse.jgit.api.Git" ).init( repository );
 
-            jGit.add().addFilePattern( "." ).call();
+            jGit.add()
+                .addFilePattern( "box.json" )
+                .addFilePattern( changelogFileName )
+                .call();
+
             var commit = jGit.commit()
                 .setMessage( SEMANTIC_RELEASE_COMMIT_MESSAGE )
                 .setAuthor( "Travis CI", "builds@travis-ci.com" )
                 .call();
 
             jGit.tag()
-                .setObjectId( commit )
                 .setMessage( "#versionPrefix##nextVersion#" )
                 .setName( "#versionPrefix##nextVersion#" )
                 .call();
