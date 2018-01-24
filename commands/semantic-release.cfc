@@ -20,7 +20,7 @@ component {
 
     variables.SEMANTIC_RELEASE_COMMIT_MESSAGE = "__SEMANTIC RELEASE VERSION UPDATE__";
 
-    function run( dryRun = false ) {
+    function run( dryRun = false, listCommits = false ) {
         if ( dryRun ) {
             print.indentedYellowLine( "Starting Dry Run..." )
                 .line()
@@ -51,6 +51,13 @@ component {
         if ( commits.isEmpty() ) {
             print.yellowLine( "No changes detected — aborting release." );
             return;
+        }
+        if ( listCommits ) {
+            print.line().indented().boldWhiteOnRedLine( "Printing out commits" ).line();
+            commits.each( function( commit ) {
+                prettyPrintCommit( commit );
+            } );
+            print.line();
         }
 
         var type = AnalyzeCommits.run( commits, dryRun );
@@ -263,6 +270,16 @@ component {
                 break;
         }
         return semanticVersion.getVersionAsString( versionInfo )
+    }
+
+    function prettyPrintCommit( commit ) {
+        print.indented().indented().indentedMagenta( "Hash: " ).line( commit.shortHash );
+        print.indented().indented().indentedMagenta( "Type: " ).line( commit.type );
+        print.indented().indented().indentedMagenta( "Scope: " ).line( commit.scope );
+        print.indented().indented().indentedMagenta( "Subject: " ).line( commit.subject );
+        print.indented().indented().indentedMagenta( "Body: " ).line( commit.body );
+        print.indented().indented().indentedMagenta( "Footer: " ).line( commit.footer );
+        print.line();
     }
 
 }
