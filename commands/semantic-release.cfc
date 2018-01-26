@@ -1,63 +1,57 @@
 component {
 
-    property name="VerifyConditions"  inject="VerifyConditions@commandbox-semantic-release";
-    property name="GetLastRelease"    inject="GetLastRelease@commandbox-semantic-release";
-    property name="AnalyzeCommits"    inject="AnalyzeCommits@commandbox-semantic-release";
-    property name="VerifyRelease"     inject="VerifyRelease@commandbox-semantic-release";
-    property name="PublishRelease"    inject="PublishRelease@commandbox-semantic-release";
-    property name="GenerateNotes"     inject="GenerateNotes@commandbox-semantic-release";
-    property name="PublicizeRelease"  inject="PublicizeRelease@commandbox-semantic-release";
+    // Plugins
+    property name="VerifyConditions"   inject="VerifyConditions@commandbox-semantic-release";
+    property name="ReleaseFetcher"     inject="ReleaseFetcher@commandbox-semantic-release";
+    property name="CommitsRetriever"   inject="CommitsRetriever@commandbox-semantic-release";
+    property name="CommitParser"       inject="CommitParser@commandbox-semantic-release";
+    property name="AnalyzeCommits"     inject="AnalyzeCommits@commandbox-semantic-release";
+    property name="VerifyRelease"      inject="VerifyRelease@commandbox-semantic-release";
+    property name="PublishRelease"     inject="PublishRelease@commandbox-semantic-release";
+    property name="GenerateNotes"      inject="GenerateNotes@commandbox-semantic-release";
+    property name="PublicizeRelease"   inject="PublicizeRelease@commandbox-semantic-release";
 
-    property name="commitParser"      inject="ConventionalChangelogParser@commandbox-semantic-release";
-    property name="semanticVersion"   inject="provider:semanticVersion@semver";
-    property name="packageService"    inject="packageService";
-    property name="systemSettings"    inject="SystemSettings";
-    property name="fileSystemUtil"    inject="FileSystem";
+    property name="semanticVersion"    inject="provider:semanticVersion@semver";
+    property name="packageService"     inject="packageService";
+    property name="systemSettings"     inject="SystemSettings";
+    property name="fileSystemUtil"     inject="FileSystem";
 
-    property name="changelogFileName" inject="commandbox:moduleSettings:commandbox-semantic-release:changelogFileName";
-    property name="versionPrefix"     inject="commandbox:moduleSettings:commandbox-semantic-release:versionPrefix";
-    property name="targetBranch"   inject="commandbox:moduleSettings:commandbox-semantic-release:targetBranch";
+    property name="changelogFileName"  inject="commandbox:moduleSettings:commandbox-semantic-release:changelogFileName";
+    property name="versionPrefix"      inject="commandbox:moduleSettings:commandbox-semantic-release:versionPrefix";
+    property name="targetBranch"       inject="commandbox:moduleSettings:commandbox-semantic-release:targetBranch";
+    property name="buildCommitMessage" inject="commandbox:moduleSettings:commandbox-semantic-release:buildCommitMessage";
 
-    variables.SEMANTIC_RELEASE_COMMIT_MESSAGE = "__SEMANTIC RELEASE VERSION UPDATE__";
-
-    function run( dryRun = false, listCommits = false ) {
+    function run( dryRun = false, verbose = false ) {
         if ( dryRun ) {
-            print.indentedYellowLine( "Starting Dry Run..." )
+            print.line()
+                .boldBlackOnYellowLine( "                                " )
+                .boldBlackOnYellowLine( "        Starting Dry Run        " )
+                .boldBlackOnYellowLine( "                                " )
                 .line()
                 .toConsole();
         }
 
-        if ( ! dryRun && systemSettings.getSystemSetting( "TRAVIS_COMMIT_MESSAGE", "" ) == SEMANTIC_RELEASE_COMMIT_MESSAGE ) {
-            print.yellowLine( "Build kicked off from previous release — aborting release." );
-            return;
-        }
-
-        if ( ! dryRun && ! VerifyConditions.run() ) {
+        if ( ! VerifyConditions.run( dryRun, verbose ) ) {
             print.yellowLine( "Verify conditions check failed — aborting release." );
             return;
         }
 
         print.indentedGreen( "✓" )
-            .indentedWhiteLine( "Conditions verified" )
-            .toConsole();
+                .indentedWhiteLine( "Conditions verified" )
+                .toConsole();
 
-        var lastVersion = GetLastRelease.run( getPackageSlug() );
+        var lastVersion = ReleaseFetcher.run( getPackageSlug() );
         print.indentedGreen( "✓" )
             .indentedWhite( "Retrieved last version: " )
             .whiteOnCyanLine( " #lastVersion# " )
             .toConsole();
 
-        var commits = getCommits( since = lastVersion );
+        var commits = CommitsRetriever.run( lastVersion, dryRun, verbose );
+
+        // TODO: does this belong here or in a plugin?
         if ( commits.isEmpty() ) {
             print.yellowLine( "No changes detected — aborting release." );
             return;
-        }
-        if ( listCommits ) {
-            print.line().indented().boldWhiteOnRedLine( "Printing out commits" ).line();
-            commits.each( function( commit ) {
-                prettyPrintCommit( commit );
-            } );
-            print.line();
         }
 
         var type = AnalyzeCommits.run( commits, dryRun );
@@ -65,7 +59,7 @@ component {
             .indentedWhite( "Next release type: " )
             .line( " #type# ", getTypeColor( type ) );
 
-        var nextVersion = applyVersionChange( lastVersion, type );
+        var nextVersion = getNextVersionNumber( lastVersion, type );
         print.indentedGreen( "✓" )
             .indentedWhite( "Next version number: " )
             .whiteOnCyanLine( " #nextVersion# " )
@@ -80,23 +74,30 @@ component {
             .indentedWhiteLine( "Release verified" )
             .toConsole();
 
-        if ( ! dryRun ) {
-            PublishRelease.run( nextVersion );
-        }
+        PublishRelease.run( nextVersion, dryRun, verbose );
 
         print.indentedGreen( "✓" )
             .indentedWhiteLine( "Release published" )
             .toConsole();
 
-        var notes = GenerateNotes.run( lastVersion, nextVersion, commits, type, getPackageRepositoryURL() );
+        var notes = GenerateNotes.run(
+            lastVersion,
+            nextVersion,
+            commits,
+            type,
+            getPackageRepositoryURL(),
+            dryRun,
+            verbose
+        );
 
-        var changelogNotes = "## #dateTimeFormat( now(), "dd mmm yyyy '—' HH:nn:ss 'UTC'", "UTC" )#" & chr(10) & chr(10) & notes;
-        var changelogPath = fileSystemUtil.resolvePath( "" ) & changelogFileName;
-        if ( fileExists( changelogPath ) ) {
-            var currentChangelog = fileRead( changelogPath );
-            changelogNotes = changelogNotes & chr(10) & chr(10) & currentChangelog;
-        }
         if ( ! dryRun ) {
+            // TODO: what plugin makes sense to house this?
+            var changelogNotes = "## #dateTimeFormat( now(), "dd mmm yyyy '—' HH:nn:ss 'UTC'", "UTC" )#" & chr(10) & chr(10) & notes;
+            var changelogPath = fileSystemUtil.resolvePath( "" ) & changelogFileName;
+            if ( fileExists( changelogPath ) ) {
+                var currentChangelog = fileRead( changelogPath );
+                changelogNotes = changelogNotes & chr(10) & chr(10) & currentChangelog;
+            }
             fileWrite( changelogPath, changelogNotes );
         }
 
@@ -104,6 +105,9 @@ component {
             .indentedWhiteLine( "Notes generated" )
             .toConsole();
 
+
+
+        // TODO: Extract to method or plugin
         if ( ! dryRun ) {
             var builder = createObject( "java", "org.eclipse.jgit.storage.file.FileRepositoryBuilder" ).init();
             var gitDir = createObject( "java", "java.io.File" ).init( fileSystemUtil.resolvePath( "" ) & ".git" );
@@ -125,7 +129,8 @@ component {
                 .call();
 
             var commit = jGit.commit()
-                .setMessage( SEMANTIC_RELEASE_COMMIT_MESSAGE )
+                .setMessage( buildCommitMessage )
+                // TODO: move this to configuration or plugin somehow
                 .setAuthor( "Travis CI", "builds@travis-ci.com" )
                 .call();
 
@@ -134,6 +139,7 @@ component {
                 .setName( "#versionPrefix##nextVersion#" )
                 .call();
 
+            // TODO: Move this to configuration or plugin somehow
             var credentials = createObject( "java", "org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider" )
                 .init( systemSettings.getSystemSetting( "GH_TOKEN" ), "" );
 
@@ -153,13 +159,26 @@ component {
             .indentedWhiteLine( "Source control updated" )
             .toConsole();
 
-        if ( ! dryRun ) {
-            PublicizeRelease.run( notes, nextVersion, getPackageRepositoryURL() );
-        }
+        PublicizeRelease.run(
+            notes,
+            nextVersion,
+            getPackageRepositoryURL(),
+            dryRun,
+            verbose
+        );
 
         print.indentedGreen( "✓" )
             .indentedWhiteLine( "Release publicized" )
             .toConsole();
+
+        if ( dryRun ) {
+            print.line()
+                .boldBlackOnYellowLine( "                                " )
+                .boldBlackOnYellowLine( "        Finished Dry Run        " )
+                .boldBlackOnYellowLine( "                                " )
+                .line()
+                .toConsole();
+        }
     }
 
     private string function getPackageSlug() {
@@ -186,53 +205,6 @@ component {
         return packageService.readPackageDescriptor( path ).repository.url;
     }
 
-    // needs to ignore semantic-release commit message commits
-    private array function getCommits( since ) {
-        var builder = createObject( "java", "org.eclipse.jgit.storage.file.FileRepositoryBuilder" ).init();
-        var gitDir = createObject( "java", "java.io.File" ).init( fileSystemUtil.resolvePath( "" ) & ".git" );
-
-        var repository = builder
-            .setGitDir( gitDir )
-            .setMustExist( true )
-            .readEnvironment() // scan environment GIT_* variables
-            .findGitDir() // scan up the file system tree
-            .build();
-
-        var tagRef = repository.exactRef( "refs/tags/#versionPrefix##since#" );
-        var walk = createObject( "java", "org.eclipse.jgit.revwalk.RevWalk" ).init( repository );
-        var head = repository.exactRef( "HEAD" );
-        walk.markStart( walk.parseCommit( head.getObjectId() ) );
-        var commitsArray = [];
-        var commitsIterator = walk.iterator();
-        if ( isNull( tagRef ) ) {
-            while( commitsIterator.hasNext() ) {
-                var commit = commitsIterator.next();
-                var parsedCommit = commitParser.parse( commit );
-                if ( ! parsedCommit.body.contains( SEMANTIC_RELEASE_COMMIT_MESSAGE ) ) {
-                    arrayAppend( commitsArray, parsedCommit );
-                }
-            }
-        }
-        else {
-            var targetId = repository.peel( tagRef ).getPeeledObjectId();
-            if ( isNull( targetId ) ) {
-                targetId = tagRef.getObjectId();
-            }
-
-            while( commitsIterator.hasNext() ) {
-                var commit = commitsIterator.next();
-                var parsedCommit = commitParser.parse( commit );
-                if ( ! parsedCommit.body.contains( SEMANTIC_RELEASE_COMMIT_MESSAGE ) ) {
-                    arrayAppend( commitsArray, parsedCommit );
-                }
-                if ( commit.getId().equals( targetId ) ) {
-                    break;
-                }
-            }
-        }
-        return commitsArray;
-    }
-
     private string function getTypeColor( required string type ) {
         switch ( type ) {
             case "major":
@@ -245,7 +217,7 @@ component {
         }
     }
 
-    private string function applyVersionChange( required string lastVersion, required string type ) {
+    private string function getNextVersionNumber( required string lastVersion, required string type ) {
         var versionInfo = semanticVersion.parseVersion( lastVersion );
 
         if ( lastVersion == "0.0.0" ) {
@@ -270,16 +242,6 @@ component {
                 break;
         }
         return semanticVersion.getVersionAsString( versionInfo )
-    }
-
-    function prettyPrintCommit( commit ) {
-        print.indented().indented().indentedMagenta( "Hash: " ).line( commit.shortHash );
-        print.indented().indented().indentedMagenta( "Type: " ).line( commit.type );
-        print.indented().indented().indentedMagenta( "Scope: " ).line( commit.scope );
-        print.indented().indented().indentedMagenta( "Subject: " ).line( commit.subject );
-        print.indented().indented().indentedMagenta( "Body: " ).line( commit.body );
-        print.indented().indented().indentedMagenta( "Footer: " ).line( commit.footer );
-        print.line();
     }
 
 }

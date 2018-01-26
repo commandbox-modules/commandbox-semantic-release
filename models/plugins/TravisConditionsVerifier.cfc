@@ -1,16 +1,37 @@
 component implements="interfaces.ConditionsVerifier" {
 
-    property name="options"        inject="commandbox:moduleSettings:commandbox-semantic-release:pluginOptions";
-    property name="targetBranch"   inject="commandbox:moduleSettings:commandbox-semantic-release:targetBranch";
-    property name="print"          inject="PrintBuffer";
-    property name="consoleLogger"  inject="logbox:logger:console";
-    property name="systemSettings" inject="SystemSettings";
+    property name="buildCommitMessage" inject="commandbox:moduleSettings:commandbox-semantic-release:buildCommitMessage";
+    property name="options"            inject="commandbox:moduleSettings:commandbox-semantic-release:pluginOptions";
+    property name="targetBranch"       inject="commandbox:moduleSettings:commandbox-semantic-release:targetBranch";
 
-    public boolean function run() {
+    property name="systemSettings"     inject="SystemSettings";
+    // TODO: use either print OR consoleLogger
+    property name="print"              inject="PrintBuffer";
+    property name="consoleLogger"      inject="logbox:logger:console";
+
+    /**
+    * Verifies the conditions are right to run the release.
+    *
+    * @dryRun  Flag to indicate a dry run of the release.
+    * @verbose Flag to indicate printing out extra information.
+    *
+    * @returns True if the release should run.
+    */
+    public boolean function run( boolean dryRun = false, boolean verbose = false ) {
+        if ( dryRun ) {
+            return true;
+        }
+
         // false if not on travis
         if ( ! systemSettings.getSystemSetting( "TRAVIS", false ) ) {
             consoleLogger.warn( "Not running on Travis CI." );
             return false;
+        }
+
+        // false
+        if ( systemSettings.getSystemSetting( "TRAVIS_COMMIT_MESSAGE", "" ) == buildCommitMessage ) {
+            consoleLogger.warn( "Build kicked off from previous release — aborting release." );
+            return;
         }
 
         // false if a pull request

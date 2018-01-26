@@ -1,8 +1,27 @@
 component implements="interfaces.ReleasePublisher" {
 
-    property name="wirebox"          inject="wirebox";
+    property name="wirebox" inject="wirebox";
+    property name="print"   inject="PrintBuffer";
 
-    public void function run( required string nextVersion ) {
+    /**
+     * Publishes the new release on ForgeBox.
+     *
+     * @nextVersion The next version number to publish.
+     * @dryRun  Flag to indicate a dry run of the release.
+     * @verbose Flag to indicate printing out extra information.
+     */
+    public void function run(
+        required string nextVersion,
+        boolean dryRun = false,
+        boolean verbose = false
+    ) {
+        if ( dryRun ) {
+            return;
+        }
+
+        if ( verbose ) {
+            print.line().toConsole();
+        }
 
         // set next version
         wirebox.getInstance(
@@ -13,14 +32,18 @@ component implements="interfaces.ReleasePublisher" {
                 version = nextVersion,
                 tagVersion = false
             )
-            .run();
+            .run( returnOutput = ! verbose );
 
         // publish to ForgeBox
         wirebox.getInstance(
                 name = "CommandDSL",
                 initArguments = { name = "forgebox publish" }
             )
-            .run();
+            .run( returnOutput = ! verbose );
+
+        if ( verbose ) {
+            print.line().toConsole();
+        }
     }
 
 }

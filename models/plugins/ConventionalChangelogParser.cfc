@@ -1,7 +1,10 @@
-component {
+component implements="interfaces.CommitParser" {
 
     property name="fileSystemUtil" inject="FileSystem";
 
+    /**
+     * Set up jGit for the current repository to enable short hashes.
+     */
     function onDIComplete() {
         var builder = createObject( "java", "org.eclipse.jgit.storage.file.FileRepositoryBuilder" ).init();
         var gitDir = createObject( "java", "java.io.File" ).init( fileSystemUtil.resolvePath( "" ) & ".git" );
@@ -16,7 +19,21 @@ component {
         variables.objectReader = repository.newObjectReader();
     }
 
-    public struct function parse( commit ) {
+    /**
+    * Converts the commit from a jGit version to a different format used by
+    * the rest of the semantic release process.
+    *
+    * @commit  The commit to convert.
+    * @dryRun  Flag to indicate a dry run of the release.
+    * @verbose Flag to indicate printing out extra information.
+    *
+    * @return  A converted commit.
+    */
+    public any function run(
+        required any commit,
+        boolean dryRun = false,
+        boolean verbose = false
+    ) {
         var ccCommit = {};
         var parts = listToArray( commit.getFullMessage(), "#chr(10)#" );
         var topParts = reFindNoCase( "^(\w+)\(([^)]+)\)\:\s(.+)$", parts[ 1 ], 1, true );

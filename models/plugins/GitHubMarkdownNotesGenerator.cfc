@@ -1,13 +1,28 @@
 component implements="interfaces.NotesGenerator" {
 
-    property name="parser" inject="ConventionalChangelogParser@commandbox-semantic-release";
+    property name="print" inject="PrintBuffer";
 
+    /**
+     * Generates markdown notes for the new release on GitHub
+     *
+     * @lastVersion   The last version of the package.
+     * @nextVersion   The next version of the package.
+     * @commits       An array of commits between the two versions.
+     * @type          The type of the next release: major, minor, or patch.
+     * @repositoryUrl The url of the remote repository.
+     * @dryRun        Flag to indicate a dry run of the release.
+     * @verbose       Flag to indicate printing out extra information.
+     *
+     * @return        A string containing the new notes for the release.
+     */
     public string function run(
         required string lastVersion,
         required string nextVersion,
         required array commits,
         required string type,
-        required string repositoryUrl
+        required string repositoryUrl,
+        boolean dryRun = false,
+        boolean verbose = true
     ) {
         var docCommits = commits.reduce( function( docs, commit ) {
             if ( commit.isBreakingChange ) {
@@ -37,7 +52,20 @@ component implements="interfaces.NotesGenerator" {
             } ), true );
             docsArray.append( "" );
         }
-        return arrayToList( docsArray, "#chr(10)#" );
+        var generatedDocs = arrayToList( docsArray, "#chr(10)#" );
+        if ( verbose ) {
+            print.line()
+                .indented()
+                .boldBlackOnYellowLine( "      NEW CHANGELOG      " )
+                .line()
+                .whiteLine( generatedDocs )
+                .line()
+                .indented()
+                .boldBlackOnYellowLine( "      END CHANGELOG      " )
+                .line()
+                .toConsole();
+        }
+        return generatedDocs;
     }
 
 }
