@@ -188,12 +188,16 @@ $ box semantic-release
 Polling.................
   ✓  Conditions verified
   ✓  Retrieved last version:  3.4.0
+  ✓  Commits  retrieved
+  ✓  Commits parsed
+  ✓  Commits filtered
   ✓  Next release type:  minor
   ✓  Next version number:  3.5.0
   ✓  Release verified
-  ✓  Release published
   ✓  Notes generated
-  ✓  Source control updated
+  ✓  Changelog updated
+  ✓  Artifacts committed
+  ✓  Release published
   ✓  Release publicized
 ```
 
@@ -211,10 +215,94 @@ This will automatically generate a `CHANGELOG.md` file and tag the release on Gi
 * **box.json:** Revert version to the actual version ([41f1185](https://github.com/elpete/cfcollection/commit/41f1185ddd439d06b361d5874962ff77c2b6458e))
 ```
 
-### `dryRun`
+#### `dryRun`
 
 The `dryRun` flag can be used to see the next version of your application without
-actually publishing a new release.
+actually publishing a new release. Each plugin chooses how to respond to a `dryRun` flag.
+In general, any checks, committing, and publishing work will be skipped. You can
+run CommandBox Semantic Release with the `dryRun` option as many times as you would
+like without changing your package or publishing a release.
+
+```
+> semantic-release --dryRun
+
+
+        Starting Dry Run
+
+
+  ✓  Conditions verified
+  ✓  Retrieved last version:  1.0.1
+  ✓  Commits  retrieved
+  ✓  Commits parsed
+  ✓  Commits filtered
+  ✓  Next release type:  patch
+  ✓  Next version number:  1.0.2
+  ✓  Release verified
+  ✓  Notes generated
+  ✓  Changelog updated
+  ✓  Artifacts committed
+  ✓  Release published
+  ✓  Release publicized
+
+
+        Finished Dry Run
+```
+
+#### `verbose`
+
+To see more information about each step printed to the console, pass the `verbose` flag.
+Each plugin chooses how to respond to the `verbose` flag.
+
+```
+> semantic-release --verbose
+
+  ✓  Conditions verified
+  ✓  Retrieved last version:  1.0.1
+
+    Printing out commits
+
+  ✓  Commits  retrieved
+
+         Hash: e5b5a76
+         Type: fix
+        Scope: box.json
+      Subject: Don't attempt to push to git on publish
+         Body:
+       Footer:
+
+  ✓  Commits parsed
+  ✓  Commits filtered
+  ✓  Next release type:  patch
+  ✓  Next version number:  1.0.2
+  ✓  Release verified
+
+        NEW NOTES
+
+### fix
+
++ __box.json:__ Don't attempt to push to git on publish ([e5b5a76](https://github.com/elpete/semantic-release-playground/commit/e5b5a769509c884235ebca93752719077c593d5d))
+
+
+        END NOTES
+
+  ✓  Notes generated
+
+        NEW CHANGELOG
+
+# 26 Jan 2018 — 20:49:38 UTC
+
+### fix
+
++ __box.json:__ Don't attempt to push to git on publish ([e5b5a76](https://github.com/elpete/semantic-release-playground/commit/e5b5a769509c884235ebca93752719077c593d5d))
+
+
+        END CHANGELOG
+
+  ✓  Changelog updated
+  ✓  Artifacts committed
+  ✓  Release published
+  ✓  Release publicized
+```
 
 ### Extending CommandBox Semantic Release
 
@@ -222,7 +310,63 @@ Though CommandBox Semantic Release is built to work out of the box on
 GitHub and Travis CI with sensible defaults, it is incredibly
 configurable and extensible.
 
+#### Plugins
+
+The following plugins are used in CommandBox Semantic Release. They are ran in
+the order they are presented. Each plugin has an optional interface that provides
+the arguments they receive.
+
+| Name               | Purpose                                                                        | Default                        | Interface            |
+| ------------------ | ------------------------------------------------------------------------------ | ------------------------------ | -------------------- |
+| `VerifyConditions` | Ensures the current build is valid for a release.                              | `TravisConditionsVerifier`     | `ConditionsVerifier` |
+| `FetchLastRelease` | Retrieves the latest release.                                                  | `ForgeBoxReleaseFetcher`       | `ReleaseFetcher`     |
+| `RetrieveCommits`  | Retrieves the commits between the last release and now.                        | `JGitCommitsRetriever`         | `CommitsRetriever`   |
+| `ParseCommit`      | Parses a commit in to a more usable format.                                    | `ConventionalChangelogParser`  | `CommitParser`       |
+| `FilterCommits`    | Filters out unwanted commits, such as build process commits.                   | `DefaultCommitFilterer`        | `CommitFilterer`     |
+| `AnalyzeCommits`   | Analyzes the commits to determine the release type.                            | `DefaultCommitAnalyzer`        | `CommitAnalyzer`     |
+| `VerifyRelease`    | Verifies the build is still valid for a release.                               | `NullReleaseVerifier`          | `ReleaseVerifier`    |
+| `GenerateNotes`    | Generates notes for use in the changelog and the release publication           | `GitHubMarkdownNotesGenerator` | `NotesGenerator`     |
+| `UpdateChangelog`  | Updates the changelog.                                                         | `FileAppendChangelogUpdater`   | `ChangelogUpdater`   |
+| `CommitArtifacts`  | Allows for committing and pushing artifacts and changes to a remote repository | `GitHubArtifactsCommitter`     | `ArtifactsCommitter` |
+| `PublishRelease`   | Publishes a release.                                                           | `ForgeBoxReleasePublisher`     | `ReleasePublisher`   |
+| `PublicizeRelease` | Publicizes a release.                                                          | `GitHubReleasePublicizer`      | `ReleasePublicizer`  |
+
+#### Plugin Options
+
+CommandBox Semantic Release has a convention for providing plugins with their specific
+settings through the `pluginOptions` setting. The `pluginOptions` settings contains
+a struct for each of the plugin interfaces. Arbitrary keys and values can be set here
+via the command line.
+
+```
+box config set modules.settings.commandbox-semantic-release.pluginOptions.VerifyConditions.buildTimeout = 1000
+```
+
+These values can then be used in your plugins:
+
+```
+component {
+    property name="options" inject="commandbox:moduleSettings:commandbox-semantic-release:pluginOptions";
+
+    function run( boolean dryRun = false, boolean verbose = false ) {
+        systemOutput( options.VerifyConditions.buildTimeout ); // 1000
+    }
+}
+```
+
+#### Other Settings
+
+| Name                 | Purpose                                                                                                                                                                                 | Default                               |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| `versionPrefix`      | The version prefix used in your tags in version control. If you don't use a version prefix, set this to an empty string.                                                                | `v`                                   |
+| `changelogFileName`  | The name of your changelog file in your source control.                                                                                                                                 | `CHANGELOG.md`                        |
+| `targetBranch`       | The branch that builds are triggered against.                                                                                                                                           | `master`                              |
+| `buildCommitMessage` | The commit message used for the `CommitArtifacts` step. This commit message is also often filtered out from changelogs and prevents the build from running if it is the current commit. | `__SEMANTIC RELEASE VERSION UPDATE__` |
+
 #### Setting CommandBox Semantic Release settings
+
+You set your custom plugins or settings via CommandBox just prior to calling the
+`semantic-release` command.
 
 ```
 after_success:
