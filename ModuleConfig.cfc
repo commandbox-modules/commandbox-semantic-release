@@ -27,7 +27,18 @@ component {
                 "VerifyConditions" = {
                     "buildTimeout" = 600, // seconds
                     "pollingInterval" = 5 // seconds
-                }
+                },
+                "FetchLastRelease" = {},
+                "RetrieveCommits" = {},
+                "ParseCommit" = {},
+                "FilterCommits" = {},
+                "AnalyzeCommits" = {},
+                "VerifyRelease" = {},
+                "GenerateNotes" = {},
+                "UpdateChangelog" = {},
+                "CommitArtifacts" = {},
+                "PublishRelease" = {},
+                "PublicizeRelease" = {}
             }
         };
 
