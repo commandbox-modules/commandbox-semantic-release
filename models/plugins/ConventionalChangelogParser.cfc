@@ -1,6 +1,7 @@
 component implements="interfaces.CommitParser" {
 
     property name="fileSystemUtil" inject="FileSystem";
+    property name="print"          inject="PrintBuffer";
 
     /**
      * Set up jGit for the current repository to enable short hashes.
@@ -53,7 +54,27 @@ component implements="interfaces.CommitParser" {
         ccCommit[ "hash" ] = commit.getId().getName();
         ccCommit[ "shortHash" ] = objectReader.abbreviate( commit.getId() ).name();
 
+        if ( verbose ) {
+            prettyPrintCommit( ccCommit );
+        }
+
         return ccCommit;
+    }
+
+    /**
+     * Print a parsed commit in a nice format to the console.
+     *
+     * @commit The commit to print
+     */
+    private function prettyPrintCommit( commit ) {
+        print.line();
+        print.indented().indented().indentedMagenta( "   Hash: " ).line( commit.shortHash );
+        print.indented().indented().indentedMagenta( "   Type: " ).line( commit.type );
+        print.indented().indented().indentedMagenta( "  Scope: " ).line( commit.scope );
+        print.indented().indented().indentedMagenta( "Subject: " ).line( commit.subject );
+        print.indented().indented().indentedMagenta( "   Body: " ).line( commit.body );
+        print.indented().indented().indentedMagenta( " Footer: " ).line( commit.footer );
+        print.line().toConsole();
     }
 
 }

@@ -56,12 +56,12 @@ component implements="interfaces.NotesGenerator" {
         if ( verbose ) {
             print.line()
                 .indented()
-                .boldBlackOnYellowLine( "      NEW CHANGELOG      " )
+                .boldBlackOnYellowLine( "      NEW NOTES      " )
                 .line()
                 .whiteLine( generatedDocs )
                 .line()
                 .indented()
-                .boldBlackOnYellowLine( "      END CHANGELOG      " )
+                .boldBlackOnYellowLine( "      END NOTES      " )
                 .line()
                 .toConsole();
         }

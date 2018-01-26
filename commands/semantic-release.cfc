@@ -1,25 +1,24 @@
 component {
 
-    // Plugins
-    property name="VerifyConditions"   inject="VerifyConditions@commandbox-semantic-release";
-    property name="ReleaseFetcher"     inject="ReleaseFetcher@commandbox-semantic-release";
-    property name="CommitsRetriever"   inject="CommitsRetriever@commandbox-semantic-release";
-    property name="CommitParser"       inject="CommitParser@commandbox-semantic-release";
-    property name="AnalyzeCommits"     inject="AnalyzeCommits@commandbox-semantic-release";
-    property name="VerifyRelease"      inject="VerifyRelease@commandbox-semantic-release";
-    property name="PublishRelease"     inject="PublishRelease@commandbox-semantic-release";
-    property name="GenerateNotes"      inject="GenerateNotes@commandbox-semantic-release";
-    property name="PublicizeRelease"   inject="PublicizeRelease@commandbox-semantic-release";
-
     property name="semanticVersion"    inject="provider:semanticVersion@semver";
     property name="packageService"     inject="packageService";
-    property name="systemSettings"     inject="SystemSettings";
     property name="fileSystemUtil"     inject="FileSystem";
 
-    property name="changelogFileName"  inject="commandbox:moduleSettings:commandbox-semantic-release:changelogFileName";
-    property name="versionPrefix"      inject="commandbox:moduleSettings:commandbox-semantic-release:versionPrefix";
-    property name="targetBranch"       inject="commandbox:moduleSettings:commandbox-semantic-release:targetBranch";
-    property name="buildCommitMessage" inject="commandbox:moduleSettings:commandbox-semantic-release:buildCommitMessage";
+    // Plugins
+    property name="VerifyConditions"   inject="VerifyConditions@commandbox-semantic-release";
+    property name="FetchLastRelease"   inject="FetchLastRelease@commandbox-semantic-release";
+    property name="RetrieveCommits"    inject="RetrieveCommits@commandbox-semantic-release";
+    property name="ParseCommit"        inject="ParseCommit@commandbox-semantic-release";
+    property name="FilterCommits"      inject="FilterCommits@commandbox-semantic-release";
+    property name="AnalyzeCommits"     inject="AnalyzeCommits@commandbox-semantic-release";
+    property name="VerifyRelease"      inject="VerifyRelease@commandbox-semantic-release";
+    property name="GenerateNotes"      inject="GenerateNotes@commandbox-semantic-release";
+    property name="UpdateChangelog"    inject="UpdateChangelog@commandbox-semantic-release";
+    property name="CommitArtifacts"    inject="CommitArtifacts@commandbox-semantic-release";
+    property name="PublishRelease"     inject="PublishRelease@commandbox-semantic-release";
+    property name="PublicizeRelease"   inject="PublicizeRelease@commandbox-semantic-release";
+
+
 
     function run( dryRun = false, verbose = false ) {
         if ( dryRun ) {
@@ -35,26 +34,39 @@ component {
             print.yellowLine( "Verify conditions check failed — aborting release." );
             return;
         }
-
         print.indentedGreen( "✓" )
-                .indentedWhiteLine( "Conditions verified" )
-                .toConsole();
+            .indentedWhiteLine( "Conditions verified" )
+            .toConsole();
 
-        var lastVersion = ReleaseFetcher.run( getPackageSlug() );
+        var lastVersion = FetchLastRelease.run( getPackageSlug() );
         print.indentedGreen( "✓" )
             .indentedWhite( "Retrieved last version: " )
             .whiteOnCyanLine( " #lastVersion# " )
             .toConsole();
 
-        var commits = CommitsRetriever.run( lastVersion, dryRun, verbose );
+        var commits = RetrieveCommits.run( lastVersion, dryRun, verbose );
+        print.indentedGreen( "✓" )
+            .indentedWhiteLine( "Commits retrieved" )
+            .toConsole();
 
-        // TODO: does this belong here or in a plugin?
         if ( commits.isEmpty() ) {
             print.yellowLine( "No changes detected — aborting release." );
             return;
         }
 
-        var type = AnalyzeCommits.run( commits, dryRun );
+        var parsedCommits = commits.map( function( commit ) {
+            return ParseCommit.run( commit, dryRun, verbose );
+        } );
+        print.indentedGreen( "✓" )
+            .indentedWhiteLine( "Commits parsed" )
+            .toConsole();
+
+        parsedCommits = FilterCommits.run( parsedCommits, dryRun, verbose );
+        print.indentedGreen( "✓" )
+            .indentedWhiteLine( "Commits filtered" )
+            .toConsole();
+
+        var type = AnalyzeCommits.run( parsedCommits, dryRun );
         print.indentedGreen( "✓" )
             .indentedWhite( "Next release type: " )
             .line( " #type# ", getTypeColor( type ) );
@@ -65,98 +77,40 @@ component {
             .whiteOnCyanLine( " #nextVersion# " )
             .toConsole();
 
-        if ( ! VerifyRelease.run( lastVersion, nextVersion, commits, type ) ) {
+        if ( ! VerifyRelease.run( lastVersion, nextVersion, parsedCommits, type ) ) {
             print.yellowLine( "Verify release check failed — aborting release." );
             return;
         }
-
         print.indentedGreen( "✓" )
             .indentedWhiteLine( "Release verified" )
-            .toConsole();
-
-        PublishRelease.run( nextVersion, dryRun, verbose );
-
-        print.indentedGreen( "✓" )
-            .indentedWhiteLine( "Release published" )
             .toConsole();
 
         var notes = GenerateNotes.run(
             lastVersion,
             nextVersion,
-            commits,
+            parsedCommits,
             type,
             getPackageRepositoryURL(),
             dryRun,
             verbose
         );
-
-        if ( ! dryRun ) {
-            // TODO: what plugin makes sense to house this?
-            var changelogNotes = "## #dateTimeFormat( now(), "dd mmm yyyy '—' HH:nn:ss 'UTC'", "UTC" )#" & chr(10) & chr(10) & notes;
-            var changelogPath = fileSystemUtil.resolvePath( "" ) & changelogFileName;
-            if ( fileExists( changelogPath ) ) {
-                var currentChangelog = fileRead( changelogPath );
-                changelogNotes = changelogNotes & chr(10) & chr(10) & currentChangelog;
-            }
-            fileWrite( changelogPath, changelogNotes );
-        }
-
         print.indentedGreen( "✓" )
             .indentedWhiteLine( "Notes generated" )
             .toConsole();
 
-
-
-        // TODO: Extract to method or plugin
-        if ( ! dryRun ) {
-            var builder = createObject( "java", "org.eclipse.jgit.storage.file.FileRepositoryBuilder" ).init();
-            var gitDir = createObject( "java", "java.io.File" ).init( fileSystemUtil.resolvePath( "" ) & ".git" );
-            var repository = builder
-                .setGitDir( gitDir )
-                .setMustExist( true )
-                .readEnvironment() // scan environment GIT_* variables
-                .findGitDir() // scan up the file system tree
-                .build();
-            var jGit = createObject( "java", "org.eclipse.jgit.api.Git" ).init( repository );
-
-            jGit.checkout()
-                .setName( targetBranch )
-                .call();
-
-            jGit.add()
-                .addFilePattern( "box.json" )
-                .addFilePattern( changelogFileName )
-                .call();
-
-            var commit = jGit.commit()
-                .setMessage( buildCommitMessage )
-                // TODO: move this to configuration or plugin somehow
-                .setAuthor( "Travis CI", "builds@travis-ci.com" )
-                .call();
-
-            jGit.tag()
-                .setMessage( "#versionPrefix##nextVersion#" )
-                .setName( "#versionPrefix##nextVersion#" )
-                .call();
-
-            // TODO: Move this to configuration or plugin somehow
-            var credentials = createObject( "java", "org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider" )
-                .init( systemSettings.getSystemSetting( "GH_TOKEN" ), "" );
-
-            jGit.push()
-                .setDryRun( dryRun )
-                .setCredentialsProvider( credentials )
-                .call();
-
-            jGit.push()
-                .setDryRun( dryRun )
-                .setCredentialsProvider( credentials )
-                .setPushTags()
-                .call();
-        }
-
+        UpdateChangelog.run( notes, dryRun, verbose );
         print.indentedGreen( "✓" )
-            .indentedWhiteLine( "Source control updated" )
+            .indentedWhiteLine( "Changelog updated" )
+            .toConsole();
+
+        CommitArtifacts.run( nextVersion, dryRun, verbose );
+        print.indentedGreen( "✓" )
+            .indentedWhiteLine( "Artifacts committed" )
+            .toConsole();
+
+        PublishRelease.run( nextVersion, dryRun, verbose );
+        print.indentedGreen( "✓" )
+            .indentedWhiteLine( "Release published" )
             .toConsole();
 
         PublicizeRelease.run(
@@ -166,7 +120,6 @@ component {
             dryRun,
             verbose
         );
-
         print.indentedGreen( "✓" )
             .indentedWhiteLine( "Release publicized" )
             .toConsole();

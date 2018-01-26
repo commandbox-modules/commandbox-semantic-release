@@ -1,13 +1,11 @@
 component implements="interfaces.ConditionsVerifier" {
 
+    property name="systemSettings"     inject="SystemSettings";
+    property name="print"              inject="PrintBuffer";
+
     property name="buildCommitMessage" inject="commandbox:moduleSettings:commandbox-semantic-release:buildCommitMessage";
     property name="options"            inject="commandbox:moduleSettings:commandbox-semantic-release:pluginOptions";
     property name="targetBranch"       inject="commandbox:moduleSettings:commandbox-semantic-release:targetBranch";
-
-    property name="systemSettings"     inject="SystemSettings";
-    // TODO: use either print OR consoleLogger
-    property name="print"              inject="PrintBuffer";
-    property name="consoleLogger"      inject="logbox:logger:console";
 
     /**
     * Verifies the conditions are right to run the release.
@@ -24,32 +22,32 @@ component implements="interfaces.ConditionsVerifier" {
 
         // false if not on travis
         if ( ! systemSettings.getSystemSetting( "TRAVIS", false ) ) {
-            consoleLogger.warn( "Not running on Travis CI." );
+            print.yellowLine( "Not running on Travis CI." ).toConsole();
             return false;
         }
 
         // false
         if ( systemSettings.getSystemSetting( "TRAVIS_COMMIT_MESSAGE", "" ) == buildCommitMessage ) {
-            consoleLogger.warn( "Build kicked off from previous release — aborting release." );
+            print.yellowLine( "Build kicked off from previous release — aborting release." ).toConsole();
             return;
         }
 
         // false if a pull request
         if ( systemSettings.getSystemSetting( "TRAVIS_PULL_REQUEST", "false" ) != "false" ) {
-            consoleLogger.warn( "Currently building a Pull Request." );
+            print.yellowLine( "Currently building a Pull Request." ).toConsole();
             return false;
         }
 
         // false if a tag
         if ( systemSettings.getSystemSetting( "TRAVIS_TAG", "" ) != "" ) {
-            consoleLogger.warn( "Currently building a tag." );
+            print.yellowLine( "Currently building a tag." ).toConsole();
             return false;
         }
 
         // false if not our configured branch (usually master)
         if ( systemSettings.getSystemSetting( "TRAVIS_BRANCH", "" ) != targetBranch ) {
-            consoleLogger.warn( "Currently building against the [#systemSettings.getSystemSetting( "TRAVIS_BRANCH", "" )#] branch." );
-            consoleLogger.warn( "Releases only happen when builds are triggered against the [#targetBranch#] branch." );
+            print.yellowLine( "Currently building against the [#systemSettings.getSystemSetting( "TRAVIS_BRANCH", "" )#] branch." ).toConsole();
+            print.yellowLine( "Releases only happen when builds are triggered against the [#targetBranch#] branch." ).toConsole();
             return false;
         }
 
@@ -62,7 +60,7 @@ component implements="interfaces.ConditionsVerifier" {
 
         // false if not the build leader ( job 1 )
         if ( listLast( systemSettings.getSystemSetting( "TRAVIS_JOB_NUMBER", 0 ), "." ) != 1 ) {
-            consoleLogger.warn( "This job is not the job leader for the build." );
+            print.yellowLine( "This job is not the job leader for the build." ).toConsole();
             return false;
         }
 
@@ -87,7 +85,7 @@ component implements="interfaces.ConditionsVerifier" {
             }
             catch ( any e ) {
                 // false if we run in to an error
-                consoleLogger.warn( "One or more of the jobs was not successful." );
+                print.yellowLine( "One or more of the jobs was not successful." ).toConsole();
                 return false;
             }
 
@@ -97,8 +95,9 @@ component implements="interfaces.ConditionsVerifier" {
 
             var elapsedTimeInSeconds = ( getTickCount() - startTick ) / 1000;
             if ( elapsedTimeInSeconds > options.VerifyConditions.buildTimeout ) {
-                print.line( "" ).toConsole();
-                consoleLogger.warn( "Release timed out waiting for other jobs to finish." );
+                print.line( "" )
+                    .yellowLine( "Timed out waiting for other jobs to finish." )
+                    .toConsole();
                 return false;
             }
 

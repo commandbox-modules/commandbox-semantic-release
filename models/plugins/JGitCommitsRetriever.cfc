@@ -1,14 +1,12 @@
 component implements="interfaces.CommitsRetriever" {
 
     property name="fileSystemUtil"     inject="FileSystem";
-    property name="CommitParser"       inject="CommitParser@commandbox-semantic-release";
     property name="print"              inject="PrintBuffer";
 
-    property name="buildCommitMessage" inject="commandbox:moduleSettings:commandbox-semantic-release:buildCommitMessage";
     property name="versionPrefix"      inject="commandbox:moduleSettings:commandbox-semantic-release:versionPrefix";
 
     /**
-     * Set up jGit for the current repository to find the commits
+     * Set up jGit for the current repository.
      */
     function onDIComplete() {
         var builder = createObject( "java", "org.eclipse.jgit.storage.file.FileRepositoryBuilder" ).init();
@@ -52,13 +50,7 @@ component implements="interfaces.CommitsRetriever" {
         if ( isNull( tagRef ) ) {
             while( commitsIterator.hasNext() ) {
                 var commit = commitsIterator.next();
-                var parsedCommit = CommitParser.run( commit, dryRun, verbose );
-                if ( ! parsedCommit.body.contains( buildCommitMessage ) ) {
-                    arrayAppend( commitsArray, parsedCommit );
-                    if ( verbose ) {
-                        prettyPrintCommit( parsedCommit );
-                    }
-                }
+                arrayAppend( commitsArray, commit );
             }
         }
         else {
@@ -69,13 +61,7 @@ component implements="interfaces.CommitsRetriever" {
 
             while( commitsIterator.hasNext() ) {
                 var commit = commitsIterator.next();
-                var parsedCommit = CommitParser.run( commit, dryRun, verbose );
-                if ( ! parsedCommit.body.contains( buildCommitMessage ) ) {
-                    arrayAppend( commitsArray, parsedCommit );
-                    if ( verbose ) {
-                        prettyPrintCommit( parsedCommit );
-                    }
-                }
+                arrayAppend( commitsArray, commit );
                 if ( commit.getId().equals( targetId ) ) {
                     break;
                 }
@@ -83,16 +69,6 @@ component implements="interfaces.CommitsRetriever" {
         }
 
         return commitsArray;
-    }
-
-    private function prettyPrintCommit( commit ) {
-        print.indented().indented().indentedMagenta( "   Hash: " ).line( commit.shortHash );
-        print.indented().indented().indentedMagenta( "   Type: " ).line( commit.type );
-        print.indented().indented().indentedMagenta( "  Scope: " ).line( commit.scope );
-        print.indented().indented().indentedMagenta( "Subject: " ).line( commit.subject );
-        print.indented().indented().indentedMagenta( "   Body: " ).line( commit.body );
-        print.indented().indented().indentedMagenta( " Footer: " ).line( commit.footer );
-        print.line().toConsole();
     }
 
 }
