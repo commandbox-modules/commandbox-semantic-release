@@ -1,4 +1,5 @@
 # CommandBox Semantic Release
+
 [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors)
 
 ## Automatic version management, package publishing, and changelogs.
@@ -31,6 +32,11 @@ workflow. If you have different workflow needs, please check out
 #### Setup Steps
 
 These setup steps only need to happen once per repository set up with CommandBox Semantic Release.
+
+> Pro Tip: Almost all these steps will be done for you _**automatically**_ when you
+> use the [`cb-module-template`](https://www.forgebox.io/view/cb-module-template)
+> to scaffold your module. You will just need to add your encrypted enviornment
+> variables to Travis CI and start committing with the conventional changelog format!
 
 * Host your repository on GitHub.
 * Have a [ForgeBox](https://www.forgebox.io) account
@@ -422,8 +428,11 @@ always has the correct version, you should be fine.
 Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds/all-contributors#emoji-key)):
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+
 | [<img src="https://avatars1.githubusercontent.com/u/2583646?v=4" width="100px;"/><br /><sub>Eric Peterson</sub>](https://github.com/elpete)<br />[💻](https://github.com/elpete/commandbox-semantic-release/commits?author=elpete "Code") [📖](https://github.com/elpete/commandbox-semantic-release/commits?author=elpete "Documentation") |
-| :---: |
+| :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+
+
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/kentcdodds/all-contributors) specification. Contributions of any kind welcome!
