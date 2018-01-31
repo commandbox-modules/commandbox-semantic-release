@@ -103,14 +103,14 @@ component {
             .indentedWhiteLine( "Changelog updated" )
             .toConsole();
 
-        CommitArtifacts.run( nextVersion, dryRun, verbose );
-        print.indentedGreen( "✓" )
-            .indentedWhiteLine( "Artifacts committed" )
-            .toConsole();
-
         PublishRelease.run( nextVersion, dryRun, verbose );
         print.indentedGreen( "✓" )
             .indentedWhiteLine( "Release published" )
+            .toConsole();
+
+        CommitArtifacts.run( nextVersion, dryRun, verbose );
+        print.indentedGreen( "✓" )
+            .indentedWhiteLine( "Artifacts committed" )
             .toConsole();
 
         PublicizeRelease.run(
