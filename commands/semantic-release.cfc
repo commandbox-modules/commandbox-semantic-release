@@ -18,8 +18,6 @@ component {
     property name="PublishRelease"     inject="PublishRelease@commandbox-semantic-release";
     property name="PublicizeRelease"   inject="PublicizeRelease@commandbox-semantic-release";
 
-
-
     function run( dryRun = false, verbose = false ) {
         if ( dryRun ) {
             print.line()
@@ -98,7 +96,7 @@ component {
             .indentedWhiteLine( "Notes generated" )
             .toConsole();
 
-        UpdateChangelog.run( notes, dryRun, verbose );
+        UpdateChangelog.run( notes, nextVersion, dryRun, verbose );
         print.indentedGreen( "✓" )
             .indentedWhiteLine( "Changelog updated" )
             .toConsole();

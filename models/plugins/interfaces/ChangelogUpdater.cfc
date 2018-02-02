@@ -9,6 +9,7 @@ interface {
      */
     public void function run(
         required string notes,
+        required string nextVersion,
         boolean dryRun,
         boolean verbose
     );

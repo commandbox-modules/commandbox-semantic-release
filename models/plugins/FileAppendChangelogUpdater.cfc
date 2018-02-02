@@ -4,6 +4,7 @@ component implements="interfaces.ChangelogUpdater" {
     property name="print"              inject="PrintBuffer";
 
     property name="changelogFileName"  inject="commandbox:moduleSettings:commandbox-semantic-release:changelogFileName";
+    property name="versionPrefix"      inject="commandbox:moduleSettings:commandbox-semantic-release:versionPrefix";
 
     /**
      * Updates the current changelog with the new notes.
@@ -14,10 +15,16 @@ component implements="interfaces.ChangelogUpdater" {
      */
     public void function run(
         required string notes,
+        required string nextVersion,
         boolean dryRun = false,
         boolean verbose = false
     ) {
-        var changelogNotes = "## #dateTimeFormat( now(), "dd mmm yyyy '—' HH:nn:ss 'UTC'", "UTC" )#" & chr(10) & chr(10) & notes;
+        var changelogNotes = "" &
+            "## #versionPrefix##nextVersion#" & chr(10) &
+            "#### #dateTimeFormat( now(), "dd mmm yyyy '—' HH:nn:ss 'UTC'", "UTC" )#" & chr(10) &
+            chr(10) &
+            notes;
+
         var changelogPath = fileSystemUtil.resolvePath( "" ) & changelogFileName;
 
         if ( fileExists( changelogPath ) ) {
