@@ -58,13 +58,12 @@ component implements="interfaces.CommitsRetriever" {
             if ( isNull( targetId ) ) {
                 targetId = tagRef.getObjectId();
             }
-
             while( commitsIterator.hasNext() ) {
                 var commit = commitsIterator.next();
-                arrayAppend( commitsArray, commit );
                 if ( commit.getId().equals( targetId ) ) {
                     break;
                 }
+                arrayAppend( commitsArray, commit );
             }
         }
 
