@@ -29,7 +29,7 @@ component implements="interfaces.ConditionsVerifier" {
         // false
         if ( systemSettings.getSystemSetting( "TRAVIS_COMMIT_MESSAGE", "" ) == buildCommitMessage ) {
             print.yellowLine( "Build kicked off from previous release — aborting release." ).toConsole();
-            return;
+            return false;
         }
 
         // false if a pull request
