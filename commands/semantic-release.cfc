@@ -18,7 +18,7 @@ component {
     property name="PublishRelease"     inject="PublishRelease@commandbox-semantic-release";
     property name="PublicizeRelease"   inject="PublicizeRelease@commandbox-semantic-release";
 
-    function run( dryRun = false, verbose = false ) {
+    function run( dryRun = false, verbose = false, force = false ) {
         if ( dryRun ) {
             print.line()
                 .boldBlackOnYellowLine( "                                " )
@@ -28,15 +28,32 @@ component {
                 .toConsole();
         }
 
-        if ( ! VerifyConditions.run( dryRun, verbose ) ) {
-            print.yellowLine( "Verify conditions check failed — aborting release." );
-            return;
+        if ( force ) {
+            print.yellowLine( "Skipping verification checks due to force flag" ).toConsole();
         }
-        print.indentedGreen( "✓" )
+        else if ( ! VerifyConditions.run( dryRun, verbose ) ) {
+            print.yellowLine( "Verify conditions check failed — switching to dry run mode." ).toConsole();
+            arguments.dryRun = true;
+            print.line()
+                .boldBlackOnYellowLine( "                                " )
+                .boldBlackOnYellowLine( "        Starting Dry Run        " )
+                .boldBlackOnYellowLine( "                                " )
+                .line()
+                .toConsole();
+        }
+        else {
+            print.indentedGreen( "✓" )
             .indentedWhiteLine( "Conditions verified" )
             .toConsole();
+        }
 
-        var lastVersion = FetchLastRelease.run( getPackageSlug() );
+        try {
+            var lastVersion = FetchLastRelease.run( getPackageSlug() );
+        }
+        catch( forgebox e ) {
+            return error( "Unable to fetch last version. Aborting", e.message );
+        }
+
         print.indentedGreen( "✓" )
             .indentedWhite( "Retrieved last version: " )
             .whiteOnCyanLine( " #lastVersion# " )
