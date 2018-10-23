@@ -36,7 +36,7 @@ component implements="interfaces.CommitParser" {
         boolean verbose = false
     ) {
         var ccCommit = {};
-        var parts = listToArray( commit.getFullMessage(), "#server.separator.line##server.separator.line#", true, true );
+        var parts = arraySlice( commit.getFullMessage().split("[\n\r]+"), 1 );
         var topParts = reFindNoCase( "^(\w+)\(([^)]+)\)\:\s(.+)$", parts[ 1 ], 1, true );
 
         ccCommit[ "type" ] = topParts.pos.len() >= 2 ?
