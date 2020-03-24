@@ -1,37 +1,37 @@
 {
-    "name": "CommandBox Semantic Release",
-    "version": "2.1.6",
-    "author": "Eric Peterson",
-    "homepage": "https://github.com/commandbox-modules/commandbox-semantic-release",
-    "documentation": "https://github.com/commandbox-modules/commandbox-semantic-release",
-    "location": "forgeboxStorage",
-    "scripts": {
-        "onRelease": "publish",
-        "postPublish": "!git push && git push --tags"
+    "name":"CommandBox Semantic Release",
+    "version":"2.1.7",
+    "author":"Eric Peterson",
+    "homepage":"https://github.com/commandbox-modules/commandbox-semantic-release",
+    "documentation":"https://github.com/commandbox-modules/commandbox-semantic-release",
+    "location":"forgeboxStorage",
+    "scripts":{
+        "onRelease":"publish",
+        "postPublish":"!git push && git push --tags"
     },
-    "repository": {
-        "type": "git",
-        "URL": "https://github.com/commandbox-modules/commandbox-semantic-release"
+    "repository":{
+        "type":"git",
+        "URL":"https://github.com/commandbox-modules/commandbox-semantic-release"
     },
-    "slug": "commandbox-semantic-release",
-    "shortDescription": "Automated releases for CFML applications",
-    "keywords": [
+    "slug":"commandbox-semantic-release",
+    "shortDescription":"Automated releases for CFML applications",
+    "keywords":[
         "release",
         "forgebox",
         "semantic-versioning",
         "automation"
     ],
-    "private": false,
-    "type": "commandbox-modules",
-    "ignore": [
+    "private":false,
+    "type":"commandbox-modules",
+    "ignore":[
         "**/.*",
         "test",
         "tests"
     ],
-    "dependencies": {
-        "semver": "^1.1.3"
+    "dependencies":{
+        "semver":"^1.1.3"
     },
-    "installPaths": {
-        "semver": "modules/semver"
+    "installPaths":{
+        "semver":"modules/semver"
     }
 }
