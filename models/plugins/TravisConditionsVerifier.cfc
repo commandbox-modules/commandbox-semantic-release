@@ -76,14 +76,20 @@ component implements="interfaces.ConditionsVerifier" {
                     .reduce( function( pendingJobs, job ) {
                         if ( ! job.allow_failure && job.state != "passed" ) {
                             if ( job.state == "errored" || job.state == "failed" ) {
-                                throw( "Job failed. Abort release." );
+                                if( verbose ) {
+                                    print.line( "Job ###job.number# #job.stated#." );
+                                }
+                                throw(
+                                    type = "FailedTravisJob",
+                                    message = "Job failed. Abort release."
+                                );
                             }
                             pendingJobs.append( job.number );
                         }
                         return pendingJobs;
                     }, [] );
             }
-            catch ( any e ) {
+            catch ( FailedTravisJob e ) {
                 // false if we run in to an error
                 print.yellowLine( "One or more of the jobs was not successful." ).toConsole();
                 return false;
