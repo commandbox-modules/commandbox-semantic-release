@@ -74,6 +74,7 @@ component implements="interfaces.ConditionsVerifier" {
                         return job.number != systemSettings.getSystemSetting( "TRAVIS_JOB_NUMBER", 0 );
                     } )
                     .reduce( function( pendingJobs, job ) {
+                        param job.allow_failure = false;
                         if ( ! job.allow_failure && job.state != "passed" ) {
                             if ( job.state == "errored" || job.state == "failed" ) {
                                 if( verbose ) {
