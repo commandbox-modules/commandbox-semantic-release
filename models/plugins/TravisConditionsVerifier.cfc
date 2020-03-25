@@ -78,7 +78,7 @@ component implements="interfaces.ConditionsVerifier" {
                         if ( ! job.allow_failure && job.state != "passed" ) {
                             if ( job.state == "errored" || job.state == "failed" ) {
                                 if( verbose ) {
-                                    print.line( "Job ###job.number# #job.stated#." );
+                                    print.line( "Job ###job.number# #job.state#." );
                                 }
                                 throw(
                                     type = "FailedTravisJob",
