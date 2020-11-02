@@ -71,6 +71,8 @@ component {
             .to( "#moduleMapping#.models.plugins.GitHubMarkdownNotesGenerator" );
         binder.map( "FileAppendChangelogUpdater@commandbox-semantic-release" )
             .to( "#moduleMapping#.models.plugins.FileAppendChangelogUpdater" );
+        binder.map( "NullArtifactsCommitter@commandbox-semantic-release" )
+            .to( "#moduleMapping#.models.plugins.NullArtifactsCommitter" );
         binder.map( "GitHubArtifactsCommitter@commandbox-semantic-release" )
             .to( "#moduleMapping#.models.plugins.GitHubArtifactsCommitter" );
         binder.map( "ForgeBoxReleasePublisher@commandbox-semantic-release" )
