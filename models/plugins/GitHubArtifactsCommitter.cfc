@@ -3,6 +3,7 @@ component implements="interfaces.ArtifactsCommitter" {
     property name="systemSettings"     inject="SystemSettings";
     property name="fileSystemUtil"     inject="FileSystem";
 
+    property name="options"            inject="commandbox:moduleSettings:commandbox-semantic-release:pluginOptions";
     property name="buildCommitMessage" inject="commandbox:moduleSettings:commandbox-semantic-release:buildCommitMessage";
     property name="changelogFileName"  inject="commandbox:moduleSettings:commandbox-semantic-release:changelogFileName";
     property name="versionPrefix"      inject="commandbox:moduleSettings:commandbox-semantic-release:versionPrefix";
@@ -50,8 +51,10 @@ component implements="interfaces.ArtifactsCommitter" {
 
         var commit = jGit.commit()
             .setMessage( buildCommitMessage )
-            // TODO: move this to configuration or plugin somehow
-            .setAuthor( "Travis CI", "builds@travis-ci.com" )
+            .setAuthor(
+                options.CommitArtifacts.author.name,
+                options.CommitArtifacts.author.email
+            )
             .call();
 
         jGit.tag()

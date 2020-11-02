@@ -36,7 +36,12 @@ component {
                 "VerifyRelease" = {},
                 "GenerateNotes" = {},
                 "UpdateChangelog" = {},
-                "CommitArtifacts" = {},
+                "CommitArtifacts" = {
+                    "author": {
+                        "name": "CommandBox Semantic Release",
+                        "email": "csr@example.com"
+                    }
+                },
                 "PublishRelease" = {},
                 "PublicizeRelease" = {}
             }
