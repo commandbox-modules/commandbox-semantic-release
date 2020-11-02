@@ -49,6 +49,12 @@ component {
 
         binder.map( "TravisConditionsVerifier@commandbox-semantic-release" )
             .to( "#moduleMapping#.models.plugins.TravisConditionsVerifier" );
+        binder.map( "NullConditionsVerifier@commandbox-semantic-release" )
+            .to( "#moduleMapping#.models.plugins.NullConditionsVerifier" );
+        binder.map( "GitLabConditionsVerifier@commandbox-semantic-release" )
+            .to( "#moduleMapping#.models.plugins.GitLabConditionsVerifier" );
+        binder.map( "GitHubActionsConditionsVerifier@commandbox-semantic-release" )
+            .to( "#moduleMapping#.models.plugins.GitHubActionsConditionsVerifier" );
         binder.map( "ForgeBoxReleaseFetcher@commandbox-semantic-release" )
             .to( "#moduleMapping#.models.plugins.ForgeBoxReleaseFetcher" );
         binder.map( "JGitCommitsRetriever@commandbox-semantic-release" )
