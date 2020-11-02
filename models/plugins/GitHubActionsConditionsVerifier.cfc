@@ -21,7 +21,7 @@ component implements="interfaces.ConditionsVerifier" {
         }
 
         // false if not on GitHub Actions
-        if ( !systemSettings.getSystemSetting( "GITHUB_ACTION", false ) ) {
+        if ( systemSettings.getSystemSetting( "GITHUB_ACTION", "not-github-actions" ) == "not-github-actions" ) {
             print.yellowLine( "Not running on GitHub Actions." ).toConsole();
             return false;
         }
