@@ -36,7 +36,7 @@ These setup steps only need to happen once per repository set up with CommandBox
 > Pro Tip: Almost all these steps will be done for you _**automatically**_ when you
 > use the [`cb-module-template`](https://www.forgebox.io/view/cb-module-template)
 > to scaffold your module. You will just need to add an `after_success` block to
-> your `.travis.yml` file, add your encrypted enviornment variables to Travis CI,
+> your `.travis.yml` file, add your encrypted environment variables to Travis CI,
 > and start committing with the conventional changelog format!
 
 * Host your repository on GitHub.
@@ -44,7 +44,7 @@ These setup steps only need to happen once per repository set up with CommandBox
 * [Activate the repository](https://docs.travis-ci.com/user/getting-started/#To-get-started-with-Travis-CI) on Travis CI.
 * Configure your `box.json`.
 * Add a `.travis.yml` file.
-* Adding encrypted enviornment variables to Travis CI
+* Adding encrypted environment variables to Travis CI
     * `GH_TOKEN`
     * `TRAVIS_TOKEN`
     * `FORGEBOX_TOKEN`
