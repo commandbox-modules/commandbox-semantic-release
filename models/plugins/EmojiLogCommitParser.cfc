@@ -39,7 +39,7 @@ component implements="interfaces.CommitParser" {
         var parts = arraySlice( replace( commit.getFullMessage(), chr( 13 ), "", "all" ).split("\n{2,}"), 1 );
 
         /**
-         * @see https://regex101.com/r/JkO3F3/1/
+         * @see https://regex101.com/r/JkO3F3/2/
          */
         emojiLogRegex = "^([📦|👌|🐛|📖|🚀|🤖|‼️|⚠️]+\s\w+)(\([^)]+\))?\:\s(.+)$";
         topParts = reFindNoCase( emojiLogRegex, parts[ 1 ], 1, true );
@@ -47,9 +47,8 @@ component implements="interfaces.CommitParser" {
         ccCommit[ "type" ] = topParts.pos.len() >= 2 ?
             mid( parts[ 1 ], topParts.pos[ 2 ], topParts.len[ 2 ] ) :
             "📝 OTHER";
-        if ( ccCommit[ "type" ] == "‼️ BREAKING CHANGE" ){
-            ccCommit[ "type" ] = "⚠️ BREAKING CHANGE";
-        }
+        // Switch out the BREAKING emoji with one that renders
+        ccCommit[ "type" ] = replace( ccCommit[ "type"], "‼️ BREAKING","⚠️ BREAKING" );
         ccCommit[ "scope" ] = topParts.pos.len() >= 3 && topParts.pos[3] > 0 ?
             reReplace(mid( parts[ 1 ], topParts.pos[ 3 ], topParts.len[ 3 ] ), "[()]","", "ALL") :
             "*";
@@ -58,7 +57,7 @@ component implements="interfaces.CommitParser" {
             "";
         ccCommit[ "body" ] = topParts.pos.len() == 1 ? parts[ 1 ] : parts[ 2 ] ?: "";
         ccCommit[ "footer" ] = parts[ 3 ] ?: "";
-        ccCommit[ "isBreakingChange" ] = find( "BREAKING CHANGE:", commit.getFullMessage() ) > 0;
+        ccCommit[ "isBreakingChange" ] = find( "BREAKING:", commit.getFullMessage() ) > 0;
         ccCommit[ "hash" ] = commit.getId().getName();
         ccCommit[ "shortHash" ] = objectReader.abbreviate( commit.getId() ).name();
 
