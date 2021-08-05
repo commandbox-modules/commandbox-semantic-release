@@ -61,6 +61,8 @@ component {
             .to( "#moduleMapping#.models.plugins.JGitCommitsRetriever" );
         binder.map( "ConventionalChangelogParser@commandbox-semantic-release" )
             .to( "#moduleMapping#.models.plugins.ConventionalChangelogParser" );
+        binder.map( "EmojiLogCommitParser@commandbox-semantic-release" )
+            .to( "#moduleMapping#.models.plugins.EmojiLogCommitParser" );
         binder.map( "DefaultCommitFilterer@commandbox-semantic-release" )
             .to( "#moduleMapping#.models.plugins.DefaultCommitFilterer" );
         binder.map( "DefaultCommitAnalyzer@commandbox-semantic-release" )
