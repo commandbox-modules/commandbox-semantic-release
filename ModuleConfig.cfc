@@ -67,6 +67,8 @@ component {
             .to( "#moduleMapping#.models.plugins.DefaultCommitFilterer" );
         binder.map( "DefaultCommitAnalyzer@commandbox-semantic-release" )
             .to( "#moduleMapping#.models.plugins.DefaultCommitAnalyzer" );
+        binder.map( "EmojiLogCommitAnalyzer@commandbox-semantic-release" )
+            .to( "#moduleMapping#.models.plugins.EmojiLogCommitAnalyzer" );
         binder.map( "NullReleaseVerifier@commandbox-semantic-release" )
             .to( "#moduleMapping#.models.plugins.NullReleaseVerifier" );
         binder.map( "GitHubMarkdownNotesGenerator@commandbox-semantic-release" )
