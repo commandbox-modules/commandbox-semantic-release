@@ -29,9 +29,11 @@
         "tests"
     ],
     "dependencies":{
-        "semver":"^1.1.3"
+        "semver":"^1.1.3",
+        "hyper":"^3.6.2"
     },
     "installPaths":{
-        "semver":"modules/semver"
+        "semver":"modules/semver",
+        "hyper":"modules/hyper/"
     }
 }

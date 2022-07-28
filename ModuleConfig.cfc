@@ -2,6 +2,7 @@ component {
 
     this.name = "commandbox-semantic-release";
     this.autoMapModels = false;
+    this.dependencies = [ "hyper" ];
 
     function configure() {
         settings = {

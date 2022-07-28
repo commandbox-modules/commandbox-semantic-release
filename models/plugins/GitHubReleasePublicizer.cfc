@@ -3,6 +3,7 @@ component implements="interfaces.ReleasePublicizer" {
     property name="versionPrefix"  inject="commandbox:moduleSettings:commandbox-semantic-release:versionPrefix";
     property name="targetBranch"   inject="commandbox:moduleSettings:commandbox-semantic-release:targetBranch";
     property name="systemSettings" inject="SystemSettings";
+    property name="hyper"          inject="HyperBuilder@hyper";
 
     /**
      * Publishes the release notes to GitHub.
@@ -24,17 +25,21 @@ component implements="interfaces.ReleasePublicizer" {
             return;
         }
 
-        cfhttp( method = "POST", url = "#replace( repositoryUrl, "github.com/", "api.github.com/repos/" )#/releases", throwonerror="true" ) {
-            cfhttpparam( type = "header", name = "Authorization", value = "token #systemSettings.getSystemSetting( "GH_TOKEN", "" )#" );
-            cfhttpparam( type = "body", value = serializeJSON( {
+        variables.hyper.new()
+            .setMethod( "POST" )
+            .setUrl( "#replace( repositoryUrl, "github.com/", "api.github.com/repos/" )#/releases" )
+            .withHeaders( { "Authorization": "token #systemSettings.getSystemSetting( "GH_TOKEN", "" )#" } )
+            .throwErrors()
+            .asJson()
+            .setBody( {
                 "tag_name": "#versionPrefix##nextVersion#",
                 "target_commitish": targetBranch,
                 "name": "#versionPrefix##nextVersion#",
                 "body": notes,
                 "draft": false,
                 "prerelease": false
-            } ) );
-        }
+            } )
+            .send();
     }
 
 }
