@@ -11,7 +11,7 @@ component {
             "targetBranch" = "master",
             "buildCommitMessage" = "__SEMANTIC RELEASE VERSION UPDATE__",
             "plugins" = {
-                "VerifyConditions" = "TravisConditionsVerifier@commandbox-semantic-release",
+                "VerifyConditions" = "GitHubActionsConditionsVerifier@commandbox-semantic-release",
                 "FetchLastRelease" = "ForgeBoxReleaseFetcher@commandbox-semantic-release",
                 "RetrieveCommits"  = "JGitCommitsRetriever@commandbox-semantic-release",
                 "ParseCommit"      = "ConventionalChangelogParser@commandbox-semantic-release",

@@ -33,7 +33,7 @@
         "hyper":"^3.6.2"
     },
     "installPaths":{
-        "semver":"modules/semver",
+        "semver":"modules/semver/",
         "hyper":"modules/hyper/"
     }
 }
