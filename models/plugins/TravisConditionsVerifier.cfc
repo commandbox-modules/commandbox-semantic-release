@@ -16,6 +16,12 @@ component implements="interfaces.ConditionsVerifier" {
     * @returns True if the release should run.
     */
     public boolean function run( boolean dryRun = false, boolean verbose = false ) {
+        // false if build skip commit message
+        if ( findNoCase( systemSettings.getSystemSetting( "BUILD_SKIP_COMMIT_MESSAGE", "[skip release]" ), systemSettings.getSystemSetting( "TRAVIS_COMMIT_MESSAGE", "" ) ) > 0 ) {
+            print.yellowLine( "Commit requests the build to be skipped — aborting release." ).toConsole();
+            return false;
+        }
+
         if ( dryRun ) {
             return true;
         }
