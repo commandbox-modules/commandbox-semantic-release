@@ -197,13 +197,21 @@ component {
 
         switch ( type ) {
             case "major":
-                versionInfo.major += 1;
-                versionInfo.minor = 0;
+                if ( versionInfo.major == 0 ) {
+                    versionInfo.minor += 1;
+                } else {
+                    versionInfo.major += 1;
+                    versionInfo.minor = 0;
+                }
                 versionInfo.revision = 0;
                 break;
             case "minor":
-                versionInfo.minor += 1;
-                versionInfo.revision = 0;
+                if ( versionInfo.major == 0 ) {
+                    versionInfo.revision += 1;
+                } else {
+                    versionInfo.minor += 1;
+                    versionInfo.revision = 0;
+                }
                 break;
             case "patch":
                 versionInfo.revision += 1;
