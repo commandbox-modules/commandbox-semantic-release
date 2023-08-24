@@ -10,42 +10,23 @@ component {
             "changelogFileName" = "CHANGELOG.md",
             "targetBranch" = "master",
             "buildCommitMessage" = "__SEMANTIC RELEASE VERSION UPDATE__",
-            "plugins" = {
-                "VerifyConditions" = "GitHubActionsConditionsVerifier@commandbox-semantic-release",
-                "FetchLastRelease" = "ForgeBoxReleaseFetcher@commandbox-semantic-release",
-                "RetrieveCommits"  = "JGitCommitsRetriever@commandbox-semantic-release",
-                "ParseCommit"      = "ConventionalChangelogParser@commandbox-semantic-release",
-                "FilterCommits"    = "DefaultCommitFilterer@commandbox-semantic-release",
-                "AnalyzeCommits"   = "DefaultCommitAnalyzer@commandbox-semantic-release",
-                "VerifyRelease"    = "NullReleaseVerifier@commandbox-semantic-release",
-                "GenerateNotes"    = "GitHubMarkdownNotesGenerator@commandbox-semantic-release",
-                "UpdateChangelog"  = "FileAppendChangelogUpdater@commandbox-semantic-release",
-                "CommitArtifacts"  = "GitHubArtifactsCommitter@commandbox-semantic-release",
-                "PublishRelease"   = "ForgeBoxReleasePublisher@commandbox-semantic-release",
-                "PublicizeRelease" = "GitHubReleasePublicizer@commandbox-semantic-release"
-            },
-            "pluginOptions" = {
-                "VerifyConditions" = {
-                    "buildTimeout" = 600, // seconds
-                    "pollingInterval" = 5 // seconds
-                },
-                "FetchLastRelease" = {},
-                "RetrieveCommits" = {},
-                "ParseCommit" = {},
-                "FilterCommits" = {},
-                "AnalyzeCommits" = {},
-                "VerifyRelease" = {},
-                "GenerateNotes" = {},
-                "UpdateChangelog" = {},
-                "CommitArtifacts" = {
-                    "author": {
-                        "name": "CommandBox Semantic Release",
-                        "email": "csr@example.com"
-                    }
-                },
-                "PublishRelease" = {},
-                "PublicizeRelease" = {}
-            }
+
+            "plugins-VerifyConditions" = "GitHubActionsConditionsVerifier@commandbox-semantic-release",
+                "plugins-VerifyConditions-buildTimeout" = 600, // seconds
+                "plugins-VerifyConditions-pollingInterval" = 5, // seconds
+            "plugins-FetchLastRelease" = "ForgeBoxReleaseFetcher@commandbox-semantic-release",
+            "plugins-RetrieveCommits"  = "JGitCommitsRetriever@commandbox-semantic-release",
+            "plugins-ParseCommit"      = "ConventionalChangelogParser@commandbox-semantic-release",
+            "plugins-FilterCommits"    = "DefaultCommitFilterer@commandbox-semantic-release",
+            "plugins-AnalyzeCommits"   = "DefaultCommitAnalyzer@commandbox-semantic-release",
+            "plugins-VerifyRelease"    = "NullReleaseVerifier@commandbox-semantic-release",
+            "plugins-GenerateNotes"    = "GitHubMarkdownNotesGenerator@commandbox-semantic-release",
+            "plugins-UpdateChangelog"  = "FileAppendChangelogUpdater@commandbox-semantic-release",
+            "plugins-CommitArtifacts"  = "GitHubArtifactsCommitter@commandbox-semantic-release",
+                "plugins-CommitArtifacts-authorName" = "CommandBox Semantic Release",
+                "plugins-CommitArtifacts-authorEmail" = "csr@example.com",
+            "plugins-PublishRelease"   = "ForgeBoxReleasePublisher@commandbox-semantic-release",
+            "plugins-PublicizeRelease" = "GitHubReleasePublicizer@commandbox-semantic-release"
         };
 
         binder.map( "TravisConditionsVerifier@commandbox-semantic-release" )
@@ -97,29 +78,29 @@ component {
 
     function onLoad() {
         binder.map( "VerifyConditions@commandbox-semantic-release" )
-            .toDSL( settings.plugins.VerifyConditions );
+            .toDSL( settings[ "plugins-VerifyConditions" ] );
         binder.map( "FetchLastRelease@commandbox-semantic-release" )
-            .toDSL( settings.plugins.FetchLastRelease );
+            .toDSL( settings[ "plugins-FetchLastRelease" ] );
         binder.map( "RetrieveCommits@commandbox-semantic-release" )
-            .toDSL( settings.plugins.RetrieveCommits );
+            .toDSL( settings[ "plugins-RetrieveCommits" ] );
         binder.map( "ParseCommit@commandbox-semantic-release" )
-            .toDSL( settings.plugins.ParseCommit );
+            .toDSL( settings[ "plugins-ParseCommit" ] );
         binder.map( "FilterCommits@commandbox-semantic-release" )
-            .toDSL( settings.plugins.FilterCommits );
+            .toDSL( settings[ "plugins-FilterCommits" ] );
         binder.map( "AnalyzeCommits@commandbox-semantic-release" )
-            .toDSL( settings.plugins.AnalyzeCommits );
+            .toDSL( settings[ "plugins-AnalyzeCommits" ] );
         binder.map( "VerifyRelease@commandbox-semantic-release" )
-            .toDSL( settings.plugins.VerifyRelease );
+            .toDSL( settings[ "plugins-VerifyRelease" ] );
         binder.map( "GenerateNotes@commandbox-semantic-release" )
-            .toDSL( settings.plugins.GenerateNotes );
+            .toDSL( settings[ "plugins-GenerateNotes" ] );
         binder.map( "UpdateChangelog@commandbox-semantic-release" )
-            .toDSL( settings.plugins.UpdateChangelog );
+            .toDSL( settings[ "plugins-UpdateChangelog" ] );
         binder.map( "CommitArtifacts@commandbox-semantic-release" )
-            .toDSL( settings.plugins.CommitArtifacts );
+            .toDSL( settings[ "plugins-CommitArtifacts" ] );
         binder.map( "PublishRelease@commandbox-semantic-release" )
-            .toDSL( settings.plugins.PublishRelease );
+            .toDSL( settings[ "plugins-PublishRelease" ] );
         binder.map( "PublicizeRelease@commandbox-semantic-release" )
-            .toDSL( settings.plugins.PublicizeRelease );
+            .toDSL( settings[ "plugins-PublicizeRelease" ] );
     }
 
 }

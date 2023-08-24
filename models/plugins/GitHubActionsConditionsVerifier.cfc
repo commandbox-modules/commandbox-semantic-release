@@ -4,7 +4,6 @@ component implements="interfaces.ConditionsVerifier" {
     property name="print"              inject="PrintBuffer";
 
     property name="buildCommitMessage" inject="commandbox:moduleSettings:commandbox-semantic-release:buildCommitMessage";
-    property name="options"            inject="commandbox:moduleSettings:commandbox-semantic-release:pluginOptions";
     property name="targetBranch"       inject="commandbox:moduleSettings:commandbox-semantic-release:targetBranch";
 
     /**

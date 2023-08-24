@@ -1,6 +1,6 @@
 {
     "name":"CommandBox Semantic Release",
-    "version":"3.0.0",
+    "version":"3.0.1",
     "author":"Eric Peterson",
     "homepage":"https://github.com/commandbox-modules/commandbox-semantic-release",
     "documentation":"https://github.com/commandbox-modules/commandbox-semantic-release",

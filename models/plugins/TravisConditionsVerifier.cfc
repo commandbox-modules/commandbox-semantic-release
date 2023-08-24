@@ -4,7 +4,7 @@ component implements="interfaces.ConditionsVerifier" {
     property name="print"              inject="PrintBuffer";
 
     property name="buildCommitMessage" inject="commandbox:moduleSettings:commandbox-semantic-release:buildCommitMessage";
-    property name="options"            inject="commandbox:moduleSettings:commandbox-semantic-release:pluginOptions";
+    property name="options"            inject="commandbox:moduleSettings:commandbox-semantic-release";
     property name="targetBranch"       inject="commandbox:moduleSettings:commandbox-semantic-release:targetBranch";
 
     /**
@@ -107,7 +107,7 @@ component implements="interfaces.ConditionsVerifier" {
             }
 
             var elapsedTimeInSeconds = ( getTickCount() - startTick ) / 1000;
-            if ( elapsedTimeInSeconds > options.VerifyConditions.buildTimeout ) {
+            if ( elapsedTimeInSeconds > ( options[ "plugins-VerifyConditions-buildTimeout" ] ?: 600 ) ) {
                 print.line( "" )
                     .yellowLine( "Timed out waiting for other jobs to finish." )
                     .toConsole();
@@ -119,7 +119,7 @@ component implements="interfaces.ConditionsVerifier" {
                 print.white( "Polling..." ).toConsole();
             }
 
-            sleep( options.VerifyConditions.pollingInterval );
+            sleep( options[ "plugins:VerifyConditions:pollingInterval" ] ?: 5 );
             print.white( "." ).toConsole();
 
             // refresh the jobs from the API

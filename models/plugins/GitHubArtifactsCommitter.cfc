@@ -3,11 +3,11 @@ component implements="interfaces.ArtifactsCommitter" {
     property name="systemSettings"     inject="SystemSettings";
     property name="fileSystemUtil"     inject="FileSystem";
 
-    property name="options"            inject="commandbox:moduleSettings:commandbox-semantic-release:pluginOptions";
     property name="buildCommitMessage" inject="commandbox:moduleSettings:commandbox-semantic-release:buildCommitMessage";
     property name="changelogFileName"  inject="commandbox:moduleSettings:commandbox-semantic-release:changelogFileName";
     property name="versionPrefix"      inject="commandbox:moduleSettings:commandbox-semantic-release:versionPrefix";
     property name="targetBranch"       inject="commandbox:moduleSettings:commandbox-semantic-release:targetBranch";
+    property name="options"            inject="commandbox:moduleSettings:commandbox-semantic-release";
 
     /**
      * Set up jGit for the current repository.
@@ -52,8 +52,8 @@ component implements="interfaces.ArtifactsCommitter" {
         var commit = jGit.commit()
             .setMessage( buildCommitMessage )
             .setAuthor(
-                options.CommitArtifacts.author.name,
-                options.CommitArtifacts.author.email
+                ( options[ "plugins-CommitArtifacts-authorName" ] ?: "CommandBox Semantic Release" ),
+                ( options[ "plugins-CommitArtifacts-authorEmail" ] ?: "csr@example.com" )
             )
             .call();
 
