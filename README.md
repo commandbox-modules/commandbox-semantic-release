@@ -382,6 +382,13 @@ after_success:
   - box config set endpoints.forgebox.APIToken=${FORGEBOX_TOKEN}
   - box config set modules.settings.commandbox-semantic-release.versionPrefix = ""
   - box config set modules.settings.commandbox-semantic-release.plugins.GenerateNotes = "MyCustomNotesGenerator@commandbox-semantic-release-custom-notes"
+  # load the default Semantic Release plugins so we dont lose the nested default settings when settings are merged
+  - box config set modules.commandbox-semantic-release.plugins='{"VerifyConditions"="GitHubActionsConditionsVerifier@commandbox-semantic-release","FetchLastRelease"="ForgeBoxReleaseFetcher@commandbox-semantic-release","RetrieveCommits"="JGitCommitsRetriever@commandbox-semantic-release","ParseCommit"="ConventionalChangelogParser@commandbox-semantic-release","FilterCommits"="DefaultCommitFilterer@commandbox-semantic-release","AnalyzeCommits"="DefaultCommitAnalyzer@commandbox-semantic-release","VerifyRelease"="NullReleaseVerifier@commandbox-semantic-release","GenerateNotes"="GitHubMarkdownNotesGenerator@commandbox-semantic-release","UpdateChangelog"="FileAppendChangelogUpdater@commandbox-semantic-release","CommitArtifacts"="GitHubArtifactsCommitter@commandbox-semantic-release","PublishRelease"="ForgeBoxReleasePublisher@commandbox-semantic-release","PublicizeRelease"="GitHubReleasePublicizer@commandbox-semantic-release"}'
+  # Set our Semantic Release Plugin settings to use Gitlab versions
+  - box config set modules.commandbox-semantic-release.plugins.VerifyConditions="GitLabConditionsVerifier@commandbox-semantic-release"
+  - box config set modules.commandbox-semantic-release.plugins.GenerateNotes="GitHubMarkdownNotesGenerator@commandbox-semantic-release"
+  - box config set modules.commandbox-semantic-release.plugins.CommitArtifacts="GitLabArtifactsCommitter@commandbox-semantic-release"
+  - box config set modules.commandbox-semantic-release.plugins.PublicizeRelease="GitLabReleasePublicizer@commandbox-semantic-release"
   - box semantic-release
 ```
 
