@@ -84,6 +84,15 @@ component {
             .to( "#moduleMapping#.models.plugins.ForgeBoxReleasePublisher" );
         binder.map( "GitHubReleasePublicizer@commandbox-semantic-release" )
             .to( "#moduleMapping#.models.plugins.GitHubReleasePublicizer" );
+
+        binder.map( "GitLabConditionsVerifier@commandbox-semantic-release" )
+            .to( "#moduleMapping#.models.plugins.GitLabConditionsVerifier" );
+        binder.map( "GitLabArtifactsCommitter@commandbox-semantic-release" )
+            .to( "#moduleMapping#.models.plugins.GitLabArtifactsCommitter" );
+        binder.map( "GitLabReleaseFetcher@commandbox-semantic-release" )
+            .to( "#moduleMapping#.models.plugins.GitLabReleaseFetcher" );
+        binder.map( "GitLabReleasePublicizer@commandbox-semantic-release" )
+            .to( "#moduleMapping#.models.plugins.GitLabReleasePublicizer" );
     }
 
     function onLoad() {
