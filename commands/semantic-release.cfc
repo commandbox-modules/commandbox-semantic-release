@@ -3,6 +3,7 @@ component {
     property name="semanticVersion"    inject="provider:semanticVersion@semver";
     property name="packageService"     inject="packageService";
     property name="fileSystemUtil"     inject="FileSystem";
+    property name="systemSettings"     inject="SystemSettings";
 
     // Plugins
     property name="VerifyConditions"   inject="VerifyConditions@commandbox-semantic-release";
@@ -17,8 +18,9 @@ component {
     property name="CommitArtifacts"    inject="CommitArtifacts@commandbox-semantic-release";
     property name="PublishRelease"     inject="PublishRelease@commandbox-semantic-release";
     property name="PublicizeRelease"   inject="PublicizeRelease@commandbox-semantic-release";
+    property name="targetBranch"       inject="commandbox:moduleSettings:commandbox-semantic-release:targetBranch";
 
-    function run( dryRun = false, verbose = false, force = false ) {
+    function run( dryRun = false, verbose = false, force = false, targetBranch = variables.targetBranch, preReleaseID = systemSettings.getSystemSetting( "BUILD_VERSION_PRERELEASEID", "" ), buildID = systemSettings.getSystemSetting( "BUILD_VERSION_BUILDID", "" ) ) {
         if ( dryRun ) {
             print.line()
                 .boldBlackOnYellowLine( "                                " )
@@ -86,7 +88,7 @@ component {
             .indentedWhite( "Next release type: " )
             .line( " #type# ", getTypeColor( type ) );
 
-        var nextVersion = getNextVersionNumber( lastVersion, type );
+        var nextVersion = getNextVersionNumber( lastVersion, type, preReleaseID, buildID );
         print.indentedGreen( "✓" )
             .indentedWhite( "Next version number: " )
             .whiteOnCyanLine( " #nextVersion# " )
@@ -123,7 +125,7 @@ component {
             .indentedWhiteLine( "Release published" )
             .toConsole();
 
-        CommitArtifacts.run( nextVersion, dryRun, verbose );
+        CommitArtifacts.run( nextVersion, dryRun, verbose, targetBranch );
         print.indentedGreen( "✓" )
             .indentedWhiteLine( "Artifacts committed" )
             .toConsole();
@@ -133,7 +135,8 @@ component {
             nextVersion,
             getPackageRepositoryURL(),
             dryRun,
-            verbose
+            verbose,
+            targetBranch
         );
         print.indentedGreen( "✓" )
             .indentedWhiteLine( "Release publicized" )
@@ -185,8 +188,10 @@ component {
         }
     }
 
-    private string function getNextVersionNumber( required string lastVersion, required string type ) {
+    private string function getNextVersionNumber( required string lastVersion, required string type, string preReleaseID = "", string buildID = "" ) {
         var versionInfo = semanticVersion.parseVersion( lastVersion );
+        versionInfo.preReleaseID = ( len( arguments.preReleaseID ) ? arguments.preReleaseID : versionInfo.preReleaseID );
+        versionInfo.buildID = ( len( arguments.buildID ) ? arguments.buildID : versionInfo.buildID );
 
         if ( lastVersion == "0.0.0" ) {
             versionInfo.major = 1;
