@@ -6,15 +6,15 @@
 
 ### Thanks and Prior Art
 
-* [semantic-release](https://github.com/semantic-release/semantic-release)
-* [How to Write an Open Source Javascript Library](https://egghead.io/courses/how-to-write-an-open-source-javascript-library) on [Egghead.io](https://egghead.io) by [Kent C. Dodds](https://kentcdodds.com).
+- [semantic-release](https://github.com/semantic-release/semantic-release)
+- [How to Write an Open Source Javascript Library](https://egghead.io/courses/how-to-write-an-open-source-javascript-library) on [Egghead.io](https://egghead.io) by [Kent C. Dodds](https://kentcdodds.com).
 
 ### Why? / Benefits
 
-* Stop thinking about what the next version should be.
-* Releases happen on Continuous Integration (CI) servers. You don't even need
+- Stop thinking about what the next version should be.
+- Releases happen on Continuous Integration (CI) servers. You don't even need
   to be at a computer. Releases from your smartphone just by merging a pull request.
-* Automatic changelog generation.
+- Automatic changelog generation.
 
 The package was written due to a desire to be able to release a new version of a library
 after merging a pull request without having to open my computer and run some scripts
@@ -39,16 +39,16 @@ These setup steps only need to happen once per repository set up with CommandBox
 > your `.travis.yml` file, add your encrypted environment variables to Travis CI,
 > and start committing with the conventional changelog format!
 
-* Host your repository on GitHub.
-* Have a [ForgeBox](https://www.forgebox.io) account
-* [Activate the repository](https://docs.travis-ci.com/user/getting-started/#To-get-started-with-Travis-CI) on Travis CI.
-* Configure your `box.json`.
-* Add a `.travis.yml` file.
-* Adding encrypted environment variables to Travis CI
-    * `GH_TOKEN`
-    * `TRAVIS_TOKEN`
-    * `FORGEBOX_TOKEN`
-* Follow the [conventional changelog](https://github.com/conventional-changelog/conventional-changelog) commit message format.
+- Host your repository on GitHub.
+- Have a [ForgeBox](https://www.forgebox.io) account
+- [Activate the repository](https://docs.travis-ci.com/user/getting-started/#To-get-started-with-Travis-CI) on Travis CI.
+- Configure your `box.json`.
+- Add a `.travis.yml` file.
+- Adding encrypted environment variables to Travis CI
+  - `GH_TOKEN`
+  - `TRAVIS_TOKEN`
+  - `FORGEBOX_TOKEN`
+- Follow the [conventional changelog](https://github.com/conventional-changelog/conventional-changelog) commit message format.
 
 ##### Host your repository on GitHub.
 
@@ -113,22 +113,34 @@ notifications:
   email: false
 ```
 
+Also supports targetBranch, preReleaseIDs and BuildIDs from the CommandLine
+
+```
+box semantic-release targetBranch=development prereleaseid=snapshot buildid=3456
+```
+
+This will create a version in the format: `v1.0.5-snapshot.3456`
+
+Or as Environment Variables for CI Pipeline integration
+_ `BUILD_VERSION_PRERELEASEID`
+_ `BUILD_VERSION_BUILDID`
+
 ##### Adding encrypted enviornment variables to Travis CI
 
 You will need the following environment variables available to your build on Travis CI:
 
-* `GH_TOKEN`
+- `GH_TOKEN`
 
 A GitHub personal access token with `repo` scopes. This is used to push changes
 made on your CI server (like version updates and changelogs) back to GitHub.
 
-* `TRAVIS_TOKEN`
+- `TRAVIS_TOKEN`
 
 A Travis CI personal access token. This is used to check the status of other jobs
 in the build to avoid cutting a new release if only one job of a build fails. It
 also prevents more than one job in a single build releasing a new version.
 
-* `FORGEBOX_TOKEN`
+- `FORGEBOX_TOKEN`
 
 A ForgeBox API token. This is used to publish a new release in ForgeBox. If the
 package in question is a private package, the token will be needed to retrieve
@@ -216,11 +228,11 @@ This will automatically generate a `CHANGELOG.md` file and tag the release on Gi
 
 ### feat
 
-* **Collection:** Add push, unshift, and splice methods ([e7c3efb](https://github.com/elpete/cfcollection/commit/e7c3efb50e0fe249cb531a9c3327724ab896b87d))
+- **Collection:** Add push, unshift, and splice methods ([e7c3efb](https://github.com/elpete/cfcollection/commit/e7c3efb50e0fe249cb531a9c3327724ab896b87d))
 
 ### fix
 
-* **box.json:** Revert version to the actual version ([41f1185](https://github.com/elpete/cfcollection/commit/41f1185ddd439d06b361d5874962ff77c2b6458e))
+- **box.json:** Revert version to the actual version ([41f1185](https://github.com/elpete/cfcollection/commit/41f1185ddd439d06b361d5874962ff77c2b6458e))
 ```
 
 #### `dryRun`
