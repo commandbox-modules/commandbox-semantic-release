@@ -64,7 +64,7 @@ component implements="interfaces.ArtifactsCommitter" {
             .call();
 
         var credentials = createObject( "java", "org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider" )
-            .init( "PRIVATE-TOKEN", systemSettings.getSystemSetting( "CI_JOB_TOKEN" ) );
+            .init( "JOB-TOKEN", systemSettings.getSystemSetting( "CI_JOB_TOKEN" ) );
 
         jGit.push()
             .setCredentialsProvider( credentials )

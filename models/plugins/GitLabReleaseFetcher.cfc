@@ -25,7 +25,7 @@ component implements="interfaces.ReleaseFetcher" {
         ) {
             cfhttpparam(
                 type="header",
-                name="PRIVATE-TOKEN",
+                name="JOB-TOKEN",
                 value="#systemSettings.getSystemSetting( "CI_JOB_TOKEN" )#"
             );
         };
