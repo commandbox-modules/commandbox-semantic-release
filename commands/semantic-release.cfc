@@ -130,7 +130,7 @@ component {
             .indentedWhiteLine( "Release published" )
             .toConsole();
 
-        CommitArtifacts.run( nextVersion, dryRun, verbose, targetBranch );
+        CommitArtifacts.run( nextVersion, dryRun, verbose, arguments.targetBranch );
         print.indentedGreen( "✓" )
             .indentedWhiteLine( "Artifacts committed" )
             .toConsole();
@@ -141,7 +141,7 @@ component {
             getPackageRepositoryURL(),
             dryRun,
             verbose,
-            targetBranch
+            arguments.targetBranch
         );
         print.indentedGreen( "✓" )
             .indentedWhiteLine( "Release publicized" )
