@@ -38,7 +38,7 @@ component {
         if ( force ) {
             print.yellowLine( "Skipping verification checks due to force flag" ).toConsole();
         }
-        else if ( ! VerifyConditions.run( dryRun, verbose ) ) {
+        else if ( ! VerifyConditions.run( dryRun, verbose, arguments.targetBranch ) ) {
             print.yellowLine( "Verify conditions check failed — switching to dry run mode." ).toConsole();
             arguments.dryRun = true;
             print.line()
