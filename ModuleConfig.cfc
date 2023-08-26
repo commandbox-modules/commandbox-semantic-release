@@ -66,8 +66,6 @@ component {
         binder.map( "GitHubReleasePublicizer@commandbox-semantic-release" )
             .to( "#moduleMapping#.models.plugins.GitHubReleasePublicizer" );
 
-        binder.map( "GitLabConditionsVerifier@commandbox-semantic-release" )
-            .to( "#moduleMapping#.models.plugins.GitLabConditionsVerifier" );
         binder.map( "GitLabArtifactsCommitter@commandbox-semantic-release" )
             .to( "#moduleMapping#.models.plugins.GitLabArtifactsCommitter" );
         binder.map( "GitLabReleaseFetcher@commandbox-semantic-release" )
