@@ -20,7 +20,7 @@ component {
     property name="PublicizeRelease"   inject="PublicizeRelease@commandbox-semantic-release";
     property name="targetBranch"       inject="commandbox:moduleSettings:commandbox-semantic-release:targetBranch";
 
-    function run( dryRun = false, verbose = false, force = false, targetBranch = variables.targetBranch, preReleaseID = systemSettings.getSystemSetting( "BUILD_VERSION_PRERELEASEID", "" ), buildID = systemSettings.getSystemSetting( "BUILD_VERSION_BUILDID", "" ) ) {
+    function run( dryRun = false, verbose = false, force = false, targetBranch = variables.targetBranch, preReleaseID = systemSettings.getSystemSetting( "BUILD_VERSION_PRERELEASEID", "" ), buildID = systemSettings.getSystemSetting( "BUILD_VERSION_BUILDID", 0 ) ) {
         if ( dryRun ) {
             print.line()
                 .boldBlackOnYellowLine( "                                " )
@@ -88,7 +88,7 @@ component {
             .indentedWhite( "Next release type: " )
             .line( " #type# ", getTypeColor( type ) );
 
-        var nextVersion = getNextVersionNumber( lastVersion, type, preReleaseID, buildID );
+        var nextVersion = getNextVersionNumber( lastVersion, type, arguments.preReleaseID, arguments.buildID );
         print.indentedGreen( "✓" )
             .indentedWhite( "Next version number: " )
             .whiteOnCyanLine( " #nextVersion# " )
@@ -188,7 +188,7 @@ component {
         }
     }
 
-    private string function getNextVersionNumber( required string lastVersion, required string type, string preReleaseID = "", string buildID = "" ) {
+    private string function getNextVersionNumber( required string lastVersion, required string type, string preReleaseID = "", string buildID = 0 ) {
         var versionInfo = semanticVersion.parseVersion( lastVersion );
         versionInfo.preReleaseID = arguments.preReleaseID;
         versionInfo.buildID = arguments.buildID;
