@@ -198,7 +198,7 @@ component {
             versionInfo.minor = 0;
             versionInfo.revision = 0;
             versionInfo.preReleaseID = "";
-            versionInfo.buildID = "";
+            versionInfo.buildID = 0;
             return semanticVersion.getVersionAsString( versionInfo );
         }
 
