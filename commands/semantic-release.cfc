@@ -21,6 +21,11 @@ component {
     property name="targetBranch"       inject="commandbox:moduleSettings:commandbox-semantic-release:targetBranch";
 
     function run( dryRun = false, verbose = false, force = false, targetBranch = variables.targetBranch, preReleaseID = systemSettings.getSystemSetting( "BUILD_VERSION_PRERELEASEID", "" ), buildID = systemSettings.getSystemSetting( "BUILD_VERSION_BUILDID", 0 ) ) {
+        if( verbose ){
+            print.boldWhiteOnBlackLine( "Arguments to Command" ).toConsole();
+            print.line( serializeJSON( arguments ) ).toConsole();
+        }
+        
         if ( dryRun ) {
             print.line()
                 .boldBlackOnYellowLine( "                                " )
@@ -223,6 +228,10 @@ component {
             case "patch":
                 versionInfo.revision += 1;
                 break;
+        }
+        if( verbose ){
+            print.boldWhiteOnBlackLine( "Version Info" ).toConsole();
+            print.line( serializeJSON( versionInfo ) ).toConsole();
         }
         return semanticVersion.getVersionAsString( versionInfo )
     }
