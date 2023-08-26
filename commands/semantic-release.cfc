@@ -229,10 +229,10 @@ component {
                 versionInfo.revision += 1;
                 break;
         }
-        if( verbose ){
-            print.boldWhiteOnBlackLine( "Version Info" ).toConsole();
-            print.line( serializeJSON( versionInfo ) ).toConsole();
-        }
+        
+        print.boldWhiteOnBlackLine( "Version Info" ).toConsole();
+        print.table( [ versionInfo ] ).toConsole();
+    
         return semanticVersion.getVersionAsString( versionInfo )
     }
 
