@@ -26,7 +26,7 @@ component implements="interfaces.ReleaseFetcher" {
             cfhttpparam(
                 type="header",
                 name="JOB-TOKEN",
-                value="#systemSettings.getSystemSetting( "GITLAB_ACCESS_TOKEN" )#"
+                value="#systemSettings.getSystemSetting( "CI_JOB_TOKEN" )#"
             );
         };
         var res = deserializeJSON( httpResponse.filecontent );
