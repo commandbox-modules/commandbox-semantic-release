@@ -10,7 +10,6 @@ component {
             "changelogFileName" = "CHANGELOG.md",
             "targetBranch" = "master",
             "buildCommitMessage" = "__SEMANTIC RELEASE VERSION UPDATE__",
-
             "plugins-VerifyConditions" = "GitHubActionsConditionsVerifier@commandbox-semantic-release",
                 "plugins-VerifyConditions-buildTimeout" = 600, // seconds
                 "plugins-VerifyConditions-pollingInterval" = 5, // seconds
@@ -29,49 +28,52 @@ component {
             "plugins-PublicizeRelease" = "GitHubReleasePublicizer@commandbox-semantic-release"
         };
 
-        binder.map( "TravisConditionsVerifier@commandbox-semantic-release" )
-            .to( "#moduleMapping#.models.plugins.TravisConditionsVerifier" );
-        binder.map( "NullConditionsVerifier@commandbox-semantic-release" )
-            .to( "#moduleMapping#.models.plugins.NullConditionsVerifier" );
-        binder.map( "GitLabConditionsVerifier@commandbox-semantic-release" )
-            .to( "#moduleMapping#.models.plugins.GitLabConditionsVerifier" );
-        binder.map( "GitHubActionsConditionsVerifier@commandbox-semantic-release" )
-            .to( "#moduleMapping#.models.plugins.GitHubActionsConditionsVerifier" );
-        binder.map( "ForgeBoxReleaseFetcher@commandbox-semantic-release" )
-            .to( "#moduleMapping#.models.plugins.ForgeBoxReleaseFetcher" );
-        binder.map( "JGitCommitsRetriever@commandbox-semantic-release" )
-            .to( "#moduleMapping#.models.plugins.JGitCommitsRetriever" );
         binder.map( "ConventionalChangelogParser@commandbox-semantic-release" )
             .to( "#moduleMapping#.models.plugins.ConventionalChangelogParser" );
-        binder.map( "EmojiLogCommitParser@commandbox-semantic-release" )
-            .to( "#moduleMapping#.models.plugins.EmojiLogCommitParser" );
-        binder.map( "DefaultCommitFilterer@commandbox-semantic-release" )
-            .to( "#moduleMapping#.models.plugins.DefaultCommitFilterer" );
         binder.map( "DefaultCommitAnalyzer@commandbox-semantic-release" )
             .to( "#moduleMapping#.models.plugins.DefaultCommitAnalyzer" );
+        binder.map( "DefaultCommitFilterer@commandbox-semantic-release" )
+            .to( "#moduleMapping#.models.plugins.DefaultCommitFilterer" );
         binder.map( "EmojiLogCommitAnalyzer@commandbox-semantic-release" )
             .to( "#moduleMapping#.models.plugins.EmojiLogCommitAnalyzer" );
-        binder.map( "NullReleaseVerifier@commandbox-semantic-release" )
-            .to( "#moduleMapping#.models.plugins.NullReleaseVerifier" );
-        binder.map( "GitHubMarkdownNotesGenerator@commandbox-semantic-release" )
-            .to( "#moduleMapping#.models.plugins.GitHubMarkdownNotesGenerator" );
+        binder.map( "EmojiLogCommitParser@commandbox-semantic-release" )
+            .to( "#moduleMapping#.models.plugins.EmojiLogCommitParser" );
         binder.map( "FileAppendChangelogUpdater@commandbox-semantic-release" )
             .to( "#moduleMapping#.models.plugins.FileAppendChangelogUpdater" );
-        binder.map( "NullArtifactsCommitter@commandbox-semantic-release" )
-            .to( "#moduleMapping#.models.plugins.NullArtifactsCommitter" );
-        binder.map( "GitHubArtifactsCommitter@commandbox-semantic-release" )
-            .to( "#moduleMapping#.models.plugins.GitHubArtifactsCommitter" );
+        binder.map( "ForgeBoxReleaseFetcher@commandbox-semantic-release" )
+            .to( "#moduleMapping#.models.plugins.ForgeBoxReleaseFetcher" );        
         binder.map( "ForgeBoxReleasePublisher@commandbox-semantic-release" )
             .to( "#moduleMapping#.models.plugins.ForgeBoxReleasePublisher" );
+        binder.map( "GitHubActionsConditionsVerifier@commandbox-semantic-release" )
+            .to( "#moduleMapping#.models.plugins.GitHubActionsConditionsVerifier" );
+        binder.map( "GitHubArtifactsCommitter@commandbox-semantic-release" )
+            .to( "#moduleMapping#.models.plugins.GitHubArtifactsCommitter" );
+        binder.map( "GitHubMarkdownNotesGenerator@commandbox-semantic-release" ).
+            to( "#moduleMapping#.models.plugins.GitHubMarkdownNotesGenerator" );
         binder.map( "GitHubReleasePublicizer@commandbox-semantic-release" )
             .to( "#moduleMapping#.models.plugins.GitHubReleasePublicizer" );
-
         binder.map( "GitLabArtifactsCommitter@commandbox-semantic-release" )
             .to( "#moduleMapping#.models.plugins.GitLabArtifactsCommitter" );
+        binder.map( "GitLabConditionsVerifier@commandbox-semantic-release" )
+            .to( "#moduleMapping#.models.plugins.GitLabConditionsVerifier" );
         binder.map( "GitLabReleaseFetcher@commandbox-semantic-release" )
             .to( "#moduleMapping#.models.plugins.GitLabReleaseFetcher" );
         binder.map( "GitLabReleasePublicizer@commandbox-semantic-release" )
             .to( "#moduleMapping#.models.plugins.GitLabReleasePublicizer" );
+        binder.map( "JGitCommitsRetriever@commandbox-semantic-release" )
+            .to( "#moduleMapping#.models.plugins.JGitCommitsRetriever" );
+        binder.map( "NullArtifactsCommitter@commandbox-semantic-release" )
+            .to( "#moduleMapping#.models.plugins.NullArtifactsCommitter" );
+        binder.map( "NullConditionsVerifier@commandbox-semantic-release" )
+            .to( "#moduleMapping#.models.plugins.NullConditionsVerifier" );
+        binder.map( "NullNotesGenerator@commandbox-semantic-release" )
+            .to( "#moduleMapping#.models.plugins.NullNotesGenerator" );
+        binder.map( "NullReleasePublisher@commandbox-semantic-release" )
+            .to( "#moduleMapping#.models.plugins.NullReleasePublisher" );
+        binder.map( "NullReleaseVerifier@commandbox-semantic-release" )
+            .to( "#moduleMapping#.models.plugins.NullReleaseVerifier" );
+        binder.map( "TravisConditionsVerifier@commandbox-semantic-release" )
+            .to( "#moduleMapping#.models.plugins.TravisConditionsVerifier" );        
     }
 
     function onLoad() {
