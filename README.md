@@ -359,7 +359,7 @@ a struct for each of the plugin interfaces. Arbitrary keys and values can be set
 via the command line.
 
 ```
-box config set modules.settings.commandbox-semantic-release.plugins-VerifyConditions-buildTimeout=1000
+box config set modules.commandbox-semantic-release.plugins-VerifyConditions-buildTimeout=1000
 ```
 
 These values can then be used in your plugins:
@@ -392,10 +392,9 @@ You set your custom plugins or settings via CommandBox just prior to calling the
 after_success:
   - box install commandbox-semantic-release
   - box config set endpoints.forgebox.APIToken=${FORGEBOX_TOKEN}
-  - box config set modules.settings.commandbox-semantic-release.versionPrefix = ""
-  - box config set modules.settings.commandbox-semantic-release.plugins-GenerateNotes = "MyCustomNotesGenerator@commandbox-semantic-release-custom-notes"
+  - box config set modules.commandbox-semantic-release.versionPrefix = ""
+  - box config set modules.commandbox-semantic-release.plugins-GenerateNotes = "MyCustomNotesGenerator@commandbox-semantic-release-custom-notes"
   - box config set modules.commandbox-semantic-release.plugins-VerifyConditions="GitLabConditionsVerifier@commandbox-semantic-release"
-  - box config set modules.commandbox-semantic-release.plugins-GenerateNotes="GitHubMarkdownNotesGenerator@commandbox-semantic-release"
   - box config set modules.commandbox-semantic-release.plugins-CommitArtifacts="GitLabArtifactsCommitter@commandbox-semantic-release"
   - box config set modules.commandbox-semantic-release.plugins-PublicizeRelease="GitLabReleasePublicizer@commandbox-semantic-release"
   - box semantic-release
