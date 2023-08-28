@@ -64,6 +64,8 @@ component {
             .to( "#moduleMapping#.models.plugins.JGitCommitsRetriever" );
         binder.map( "NullArtifactsCommitter@commandbox-semantic-release" )
             .to( "#moduleMapping#.models.plugins.NullArtifactsCommitter" );
+        binder.map( "NullChangelogUpdater@commandbox-semantic-release" )
+            .to( "#moduleMapping#.models.plugins.NullChangelogUpdater" );
         binder.map( "NullConditionsVerifier@commandbox-semantic-release" )
             .to( "#moduleMapping#.models.plugins.NullConditionsVerifier" );
         binder.map( "NullNotesGenerator@commandbox-semantic-release" )
