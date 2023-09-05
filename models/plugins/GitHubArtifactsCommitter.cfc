@@ -46,8 +46,13 @@ component implements="interfaces.ArtifactsCommitter" {
             .setName( targetBranch )
             .call();
 
+        if( options[ "plugins-CommitArtifacts-commitBoxJson" ] == true ) {
+            jGit.add()
+                .addFilePattern( "box.json" )
+                .call();
+        }
+
         jGit.add()
-            .addFilePattern( "box.json" )
             .addFilePattern( changelogFileName )
             .call();
 

@@ -24,6 +24,7 @@ component {
             "plugins-CommitArtifacts"  = "GitHubArtifactsCommitter@commandbox-semantic-release",
                 "plugins-CommitArtifacts-authorName" = "CommandBox Semantic Release",
                 "plugins-CommitArtifacts-authorEmail" = "csr@example.com",
+                "plugins-CommitArtifacts-commitBoxJson" = true,
             "plugins-PublishRelease"   = "ForgeBoxReleasePublisher@commandbox-semantic-release",
             "plugins-PublicizeRelease" = "GitHubReleasePublicizer@commandbox-semantic-release"
         };
