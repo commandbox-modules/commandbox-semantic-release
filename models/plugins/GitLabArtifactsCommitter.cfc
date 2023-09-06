@@ -7,7 +7,8 @@ component implements="interfaces.ArtifactsCommitter" {
     property name="changelogFileName"  inject="commandbox:moduleSettings:commandbox-semantic-release:changelogFileName";
     property name="versionPrefix"      inject="commandbox:moduleSettings:commandbox-semantic-release:versionPrefix";
     property name="targetBranch"       inject="commandbox:moduleSettings:commandbox-semantic-release:targetBranch";
-
+    property name="options"            inject="commandbox:moduleSettings:commandbox-semantic-release";
+    
     /**
      * Set up jGit for the current repository.
      */
