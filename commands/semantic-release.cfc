@@ -193,17 +193,30 @@ component {
         }
     }
 
+    private string function getPackageVersion() {
+        var path = fileSystemUtil.resolvePath( "" );
+        if ( ! packageService.isPackage( path ) ) {
+            return "0.0.0";
+        }
+        return packageService.readPackageDescriptor( path ).version;
+    }
+
     private string function getNextVersionNumber( required string lastVersion, required string type, string preReleaseID = "", string buildID = 0 ) {
         var versionInfo = semanticVersion.parseVersion( lastVersion );
         versionInfo.preReleaseID = arguments.preReleaseID;
         versionInfo.buildID = arguments.buildID;
 
         if ( lastVersion == "0.0.0" ) {
-            versionInfo.major = 1;
-            versionInfo.minor = 0;
-            versionInfo.revision = 0;
-            versionInfo.preReleaseID = "";
-            versionInfo.buildID = 0;
+            var currentPackageVersion = getPackageVersion();
+            if ( currentPackageVersion != semanticVersion.parseVersion( currentPackageVersion ).major ) {
+                versionInfo = semanticVersion.parseVersion( currentPackageVersion );
+            } else {
+                versionInfo.major = 1;
+                versionInfo.minor = 0;
+                versionInfo.revision = 0;
+                versionInfo.preReleaseID = "";
+                versionInfo.buildID = 0;
+            }
             return semanticVersion.getVersionAsString( versionInfo );
         }
 
