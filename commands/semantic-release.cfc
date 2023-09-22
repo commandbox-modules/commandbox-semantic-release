@@ -203,8 +203,6 @@ component {
 
     private string function getNextVersionNumber( required string lastVersion, required string type, string preReleaseID = "", string buildID = 0 ) {
         var versionInfo = semanticVersion.parseVersion( lastVersion );
-        versionInfo.preReleaseID = arguments.preReleaseID;
-        versionInfo.buildID = arguments.buildID;
 
         if ( lastVersion == "0.0.0" ) {
             var currentPackageVersion = getPackageVersion();
@@ -217,6 +215,8 @@ component {
                 versionInfo.preReleaseID = "";
                 versionInfo.buildID = 0;
             }
+            versionInfo.preReleaseID = arguments.preReleaseID;
+            versionInfo.buildID = arguments.buildID;
             return semanticVersion.getVersionAsString( versionInfo );
         }
 
