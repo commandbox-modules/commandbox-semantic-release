@@ -245,7 +245,9 @@ component {
         
         print.boldWhiteOnBlackLine( "Version Info" ).toConsole();
         print.table( [ versionInfo ] ).toConsole();
-    
+
+        versionInfo.preReleaseID = arguments.preReleaseID;
+        versionInfo.buildID = arguments.buildID;
         return semanticVersion.getVersionAsString( versionInfo )
     }
 
