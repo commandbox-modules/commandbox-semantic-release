@@ -30,7 +30,7 @@ component implements="interfaces.ReleaseFetcher" {
             );
         };
         var res = deserializeJSON( httpResponse.filecontent );
-        var tag = res.isEmpty() ? "0.0.0" : res.tag_name;
+        var tag = res.isEmpty() ? "0.0.0" : res[1].tag_name;
         return left( tag, 1 ) == "v" ? mid( tag, 2, tag.len() - 1 ) : tag;
     }
 
