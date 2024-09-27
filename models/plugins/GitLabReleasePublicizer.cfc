@@ -33,13 +33,18 @@ component implements="interfaces.ReleasePublicizer" {
         ) {
             cfhttpparam(
                 type="header",
-                name="PRIVATE-TOKEN",
+                name="Content-Type",
+                value="application/json"
+            );
+            cfhttpparam(
+                type="header",
+                name="JOB-TOKEN",
                 value="#systemSettings.getSystemSetting( "CI_JOB_TOKEN" )#"
             );
             cfhttpparam( type = "body", value = serializeJSON( {
                 "name": "#versionPrefix##nextVersion#",
                 "tag_name": "#versionPrefix##nextVersion#",
-                "ref": targetBranch,
+                "ref": arguments.targetBranch,
                 "description": notes
             } ) );
         }
