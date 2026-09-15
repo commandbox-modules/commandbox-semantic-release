@@ -26,7 +26,8 @@
     "ignore":[
         "**/.*",
         "test",
-        "tests"
+        "tests",
+        "server.json"
     ],
     "dependencies":{
         "semver":"^1.1.3",
@@ -34,6 +35,13 @@
     },
     "installPaths":{
         "semver":"modules/semver/",
-        "hyper":"modules/hyper/"
+        "hyper":"modules/hyper/",
+        "testbox":"testbox/"
+    },
+    "devDependencies":{
+        "testbox":"^7.0.0+19"
+    },
+    "testbox":{
+        "runner":"http://127.0.0.1:60359/tests/runner.cfm"
     }
 }

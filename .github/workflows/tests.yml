@@ -1,0 +1,16 @@
+name: Tests
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+jobs:
+  parser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Ortus-Solutions/setup-commandbox@v2.0.1
+      - run: box install
+      - run: |
+          box server start --noBrowser
+          box testbox run

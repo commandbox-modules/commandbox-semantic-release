@@ -35,27 +35,42 @@ component implements="interfaces.CommitParser" {
         boolean dryRun = false,
         boolean verbose = false
     ) {
-        var ccCommit = {};
-        var parts = arraySlice( replace( commit.getFullMessage(), chr( 13 ), "", "all" ).split("\n{2,}"), 1 );
-        var topParts = reFindNoCase( "^(\w+)\(([^)]+)\)\:\s(.+)$", parts[ 1 ], 1, true );
-
-        ccCommit[ "type" ] = topParts.pos.len() >= 2 ?
-            mid( parts[ 1 ], topParts.pos[ 2 ], topParts.len[ 2 ] ) :
-            "other";
-        ccCommit[ "scope" ] = topParts.pos.len() >= 3 ?
-            mid( parts[ 1 ], topParts.pos[ 3 ], topParts.len[ 3 ] ) :
-            "*";
-        ccCommit[ "subject" ] = topParts.pos.len() >= 4 ?
-            mid( parts[ 1 ], topParts.pos[ 4 ], topParts.len[ 4 ] ) :
-            "";
-        ccCommit[ "body" ] = topParts.pos.len() == 1 ? parts[ 1 ] : parts[ 2 ] ?: "";
-        ccCommit[ "footer" ] = parts[ 3 ] ?: "";
-        ccCommit[ "isBreakingChange" ] = find( "BREAKING CHANGE:", ccCommit.footer ) > 0;
+        var ccCommit = parseMessage( commit.getFullMessage() );
         ccCommit[ "hash" ] = commit.getId().getName();
         ccCommit[ "shortHash" ] = objectReader.abbreviate( commit.getId() ).name();
 
         if ( verbose ) {
             prettyPrintCommit( ccCommit );
+        }
+
+        return ccCommit;
+    }
+
+    /** Extract conventional header, body, and breaking footer from any standard paragraph layout. */
+    public struct function parseMessage( required string message ) {
+        var ccCommit = {};
+        var parts = listToArray( reReplace( replace( message, chr( 13 ), "", "all" ), "\n{2,}", chr( 1 ), "all" ), chr( 1 ), true );
+        var header = parts[ 1 ];
+        var topParts = reFindNoCase( "^(\w+)(?:\(([^)]+)\))?(!)?\:\s(.+)$", header, 1, true );
+
+        ccCommit.type = arrayLen( topParts.pos ) >= 2 ? lCase( mid( header, topParts.pos[ 2 ], topParts.len[ 2 ] ) ) : "other";
+        ccCommit.scope = arrayLen( topParts.pos ) >= 3 && topParts.len[ 3 ] > 0 ?
+            mid( header, topParts.pos[ 3 ], topParts.len[ 3 ] ) : "*";
+        ccCommit.subject = arrayLen( topParts.pos ) >= 5 ? mid( header, topParts.pos[ 5 ], topParts.len[ 5 ] ) : "";
+        ccCommit.body = "";
+        ccCommit.footer = "";
+        ccCommit.isBreakingChange = arrayLen( topParts.pos ) >= 4 && topParts.len[ 4 ] > 0;
+
+        var i = 0;
+        for ( var paragraph in parts ) {
+            i++;
+            if ( i == 1 ) continue;
+            if ( reFindNoCase( "(?m)^BREAKING(?: CHANGE|-CHANGE):\s*\S", paragraph ) ) {
+                ccCommit.footer = arrayToList( arraySlice( parts, i ), chr( 10 ) & chr( 10 ) );
+                ccCommit.isBreakingChange = true;
+                break;
+            }
+            ccCommit.body &= ( len( ccCommit.body ) ? chr( 10 ) & chr( 10 ) : "" ) & paragraph;
         }
 
         return ccCommit;

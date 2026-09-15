@@ -1,0 +1,14 @@
+{
+    "name":"semantic-release-breaking-tests",
+    "app":{
+        "cfengine":"lucee@6",
+        "serverHomeDirectory":".engine/breaking-tests"
+    },
+    "web":{
+        "http":{
+            "port":60359
+        }
+    },
+    "openBrowser":false,
+    "noBrowser":true
+}
